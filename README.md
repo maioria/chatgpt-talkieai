@@ -6,6 +6,14 @@
 
 - [TalkieAI 预览地址](https://talkieai.prejade.com/)
 
+## 微信小程序
+  <div style="display:flex;">
+  	<div style="padding-right:24px;">
+      <img src="http://minio.prejade.com/talkieai/WechatIMG178.jpg" style="width:200px" />
+  	</div>
+  </div>
+
+
 ## 后端
 - 使用python语言开发，开发使用的版本为3.9，web框架为fastAPI，数据层框架为SQLAlchemy，语音使用azure。
 ## 前端
