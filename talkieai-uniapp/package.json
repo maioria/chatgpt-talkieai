@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "fingerprintjs2": "^2.1.4",
+    "recorder-core": "^1.2.23062900"
+  }
+}
