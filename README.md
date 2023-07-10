@@ -18,6 +18,7 @@
 ![](http://minio.prejade.com/talkieai/%E6%88%AA%E5%B1%8F2023-07-10%2011.22.48.png)
 ## 本地启动
 ```bash
+# 数据库，创建一个空的数据库，.env文件配置好数据库后启动服务，服务会自动生成相应的表
 # 1.克隆本仓库；
 git clone git@github.com:maioria/chatgpt-talkieai.git
 cd talkieai-server
@@ -26,6 +27,7 @@ pip3 install -r requirements.txt
 # 3. 启动服务（需要新建.env文件并设置变量，参考.env.default）
 nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 &
 #前端使用HBuilder直接web或者小程序运行
+
 # 1. 安装依赖(前端只用了俩个依赖fingerprintjs2 与 recorder)
 npm install
 ```
