@@ -7,7 +7,7 @@ from typing import List, Dict
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
-from app.core.chat_gpt import ApiKeyModel, ChatGPTInvokeDTO, ChatGptRemoteComponent, ChatGptLocalComponent
+from app.core.chat_gpt import ApiKeyModel, ChatGPTInvokeDTO, ChatGptLocalComponent
 from app.core.utils import short_uuid, save_file, date_to_str, friendly_time, day_to_str
 from app.core import auth, speech_component
 from app.core.exceptions import UserAccessDeniedException, ParameterIncorrectException
@@ -18,8 +18,7 @@ from app.models.chat_models import ChatDTO, MessageType, TransformSpeechDTO, Tra
     SessionCreateDTO, DemoTranslateDTO, SpeechDemoDTO, AccountUsageType
 
 MESSAGE_SYSTEM = 'SYSTEM'
-# chat_gpt_component = ChatGptLocalComponent()
-chat_gpt_component = ChatGptRemoteComponent()
+chat_gpt_component = ChatGptLocalComponent()
 CREATE_SESSION_DEMO_CONTENT = '你好，欢迎使用Talkie，希望您能有一个好的学习体验。'
 
 """加载json文件，试听的时候取出对应内容转换成语音"""
