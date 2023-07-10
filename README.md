@@ -44,7 +44,7 @@ server {
 server {
         listen       443 ssl http2;
         listen       [::]:443 ssl http2;
-        server_name  talkieai.prejade.com;
+        server_name  {server_name};
         root         {前端编译完后的路径};
         ssl_certificate "{crt}";
         ssl_certificate_key "{key}";
