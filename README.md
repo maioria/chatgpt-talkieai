@@ -4,7 +4,7 @@
 [TalkieAI](https://github.com/maioria/chatgpt-talkieai) 是一个基于ChatGPT的外语学习应用，可通过语音进行聊天，语法分析，翻译。
 ## 在线预览
 
-- [TalkieAI 预览地址](https://talkieai.prejade.com/)
+- [TalkieAI 预览地址](https://talkie.prejade.com/)
 
 ## 微信小程序
   <div style="display:flex;">
