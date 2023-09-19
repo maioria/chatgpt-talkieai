@@ -1,0 +1,138 @@
+@import url("../../../less/global.less");
+.container {
+  background: linear-gradient(
+    135deg,
+    rgba(78, 79, 234, 0.97) 0%,
+    rgba(213, 214, 232, 0.97) 100%
+  );
+  height: 100vh;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  position: relative;
+  padding-top: 100rpx;
+  .index-page-card-box {
+    width: 100%;
+  }
+  .index-page-card {
+    margin: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 80rpx 44rpx;
+    flex-direction: column;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.2) 100%
+    );
+    border-radius: 30rpx;
+    .index-header-box {
+      width: 380rpx;
+      height: 380rpx;
+      box-sizing: border-box;
+      border-radius: 190rpx;
+      background: rgba(95, 96, 235, 1);
+      padding: 20rpx;
+      .index-header-img {
+        width: 340rpx;
+        height: 340rpx;
+        border-radius: 170rpx;
+        background: #333;
+      }
+    }
+    
+  }
+  .index-change-position-one {
+    position: absolute;
+    left: 0;
+    top: 200rpx;
+    width: 48rpx;
+    height: 724rpx;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.2) 100%
+    );
+    border-radius: 0 30rpx 30rpx 0;
+  }
+  .index-change-position-two {
+    position: absolute;
+    right: 0;
+    top: 200rpx;
+    width: 48rpx;
+    height: 724rpx;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.2) 100%
+    );
+    border-radius: 30rpx 0 0 30rpx;
+  }
+  .index-btn {
+    margin-top: 32rpx;
+  }
+
+  .uni-margin-wrap {
+    width: 690rpx;
+    width: 100%;
+  }
+  .swiper {
+    margin-top: 48rpx;
+    width: 590rpx;
+    height: 800rpx;
+  }
+  .swiper-item {
+    display: block;
+    width: 590rpx;
+    height: 800rpx;
+    text-align: center;
+  }
+  .swiper-list {
+    margin-top: 40rpx;
+    margin-bottom: 0;
+  }
+  .uni-common-mt {
+    margin-top: 60rpx;
+    position: relative;
+  }
+  .info {
+    position: absolute;
+    right: 20rpx;
+  }
+  .uni-padding-wrap {
+    width: 550rpx;
+    padding: 0 100rpx;
+  }
+  .index-name {
+    color: #fff;
+    padding: 36rpx 24rpx;
+    font-size: 30rpx;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16rpx;
+  }
+
+  .style-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28rpx;
+    height: 60rpx;
+    background: #7879D4;
+    border-radius: 14rpx;
+    .style-text {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #7879d4;
+      color: #adaded;
+      font-size: 26rpx;
+      border: none;
+    }
+  }
+}

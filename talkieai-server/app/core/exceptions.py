@@ -1,14 +1,13 @@
-"""全局异常类"""
+# 用户资源访问受限exception
 class UserAccessDeniedException(Exception):
-    """用户资源访问受限exception"""
     pass
 
 
+# 用户密码不正确
 class UserPasswordIncorrectException(Exception):
-    """用户密码不正确"""
     pass
 
 
+# 参数不正确
 class ParameterIncorrectException(Exception):
-    """参数不正确"""
     pass

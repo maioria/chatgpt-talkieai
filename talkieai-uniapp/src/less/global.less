@@ -1,0 +1,45 @@
+// 使用 * 的话 微信小程序会报错
+// [ WXSS 文件编译错误] ./pages/contact/index.wxss unexpected token *
+
+view {
+	margin: 0;
+	padding: 0;
+	
+}
+
+@common-color:#6236FF;
+
+.common-button{
+	width: 590rpx;
+	height: 120rpx;
+	background: @common-color;
+	color:#fff;
+	font-size: 14px;
+	border-radius: 60rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	
+}
+
+button:active{
+	opacity: .8;
+}
+
+view{
+	box-sizing: border-box;
+}
+
+.row-bc {
+	display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.row-sc {
+	display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}

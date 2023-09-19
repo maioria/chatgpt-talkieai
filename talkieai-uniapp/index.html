@@ -1,39 +1,26 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="keywords" content="英语学习, 英语聊天, 外语学习, 外语聊天, 英语AI聊天学习, 基于外语AI的聊天学习, 多语音AI聊天机器人, 以英语为主的AI聊天学习, AI聊天学习在多语言环境中的应用, 跨语言AI聊天机器人, 利用AI进行多语言交流的学习工具, 提升外语能力的AI聊天学习, AI助手提供的多语音聊天服务, 在线英语学习与AI聊天机器人结合的优势"/>
-		<meta name="description" content="TalkieAI是一款创新的、具有专业性的语音聊天学习应用。它利用前沿的外语AI技术，提供多语言支持和个性化学习体验。通过与TalkieAI进行互动，用户可以实时与智能AI助手进行英语交流，并在真实对话中提升口语表达能力。无论是初学者还是高级学习者，TalkieAI都为用户提供了全面的学习内容，包括实用会话模拟、语音纠错和发音训练等功能。作为一款注重用户体验的学习工具，TalkieAI将帮助您轻松地突破语言障碍，自信地与世界各地的人们进行流利、自然的交流。"/>
-		<title>
-			<%= htmlWebpackPlugin.options.title %>
-		</title>
-		<!-- Open Graph data -->
-		<!-- <meta property="og:title" content="Title Here" /> -->
-		<!-- <meta property="og:url" content="http://www.example.com/" /> -->
-		<!-- <meta property="og:image" content="http://example.com/image.jpg" /> -->
-		<!-- <meta property="og:description" content="Description Here" /> -->
-		<script>
-			var coverSupport = 'CSS' in window && typeof CSS.supports === 'function' && (CSS.supports('top: env(a)') || CSS.supports('top: constant(a)'))
-			document.write('<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' + (coverSupport ? ', viewport-fit=cover' : '') + '" />')
-			
-			// <!-- 百度统计 -->
-			var _hmt = _hmt || [];
-			(function() {
-				var hm = document.createElement("script");
-				hm.src = "https://hm.baidu.com/hm.js?aefd472cbc65015637f193a80846aa63";
-				var s = document.getElementsByTagName("script")[0];
-				s.parentNode.insertBefore(hm, s);
-			})();
-		</script>
-		<link rel="stylesheet" href="<%= BASE_URL %>static/index.<%= VUE_APP_INDEX_CSS_HASH %>.css" />
-		<link rel="icon" href="/static/icon.png" type="image/x-icon">
-	</head>
-	<body>
-		<noscript>
-			<strong>Please enable JavaScript to continue.</strong>
-		</noscript>
-		<div id="app"></div>
-		<!-- built files will be auto injected -->
-	</body>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="keywords" content="英语学习, 英语聊天, 外语学习, 外语聊天, 英语AI聊天学习, 基于外语AI的聊天学习, 多语音AI聊天机器人, 以英语为主的AI聊天学习, AI聊天学习在多语言环境中的应用, 跨语言AI聊天机器人, 利用AI进行多语言交流的学习工具, 提升外语能力的AI聊天学习, AI助手提供的多语音聊天服务, 在线英语学习与AI聊天机器人结合的优势"/>
+	<meta name="description" content="TalkieAI是一款创新的、具有专业性的语音聊天学习应用。它利用前沿的外语AI技术，提供多语言支持和个性化学习体验。通过与TalkieAI进行互动，用户可以实时与智能AI助手进行英语交流，并在真实对话中提升口语表达能力。无论是初学者还是高级学习者，TalkieAI都为用户提供了全面的学习内容，包括实用会话模拟、语音纠错和发音训练等功能。作为一款注重用户体验的学习工具，TalkieAI将帮助您轻松地突破语言障碍，自信地与世界各地的人们进行流利、自然的交流。"/>
+    <meta property="og:title" content="TalkieAI">
+	<title>TalkieAI</title>
+    <script>
+      var coverSupport = 'CSS' in window && typeof CSS.supports === 'function' && (CSS.supports('top: env(a)') ||
+        CSS.supports('top: constant(a)'))
+      document.write(
+        '<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' +
+        (coverSupport ? ', viewport-fit=cover' : '') + '" />')
+    </script>
+    <link rel="icon" type="image/x-icon" href="/favicon.png">
+    <!--preload-links-->
+    <!--app-context-->
+  </head>
+  <body>
+    <div id="app"><!--app-html--></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>

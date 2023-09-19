@@ -6,24 +6,21 @@
 
 - [TalkieAI 预览地址](https://talkie.prejade.com/)
 
-## 微信小程序
-  <div style="display:flex;">
-  	<div style="padding-right:24px;">
-      <img src="http://minio.prejade.com/talkieai/WechatIMG178.jpg" style="width:200px" />
-  	</div>
-  </div>
-
 
 ## 后端
 - 使用python语言开发，开发使用的版本为3.9，web框架为fastAPI，数据层框架为SQLAlchemy，语音使用azure。
 ## 前端
-- 前端使用uniapp开发，主要框架为ColorUI与UView，可发布到网页与小程序（APP端的录音功能还未支持好） 
+- 前端使用uniapp开发，基于vue3，可发布到网页与小程序与APP
 
 ## 项目示例图
-![](http://minio.prejade.com/talkieai/%E6%88%AA%E5%B1%8F2023-07-10%2011.21.35.png)
-![](http://minio.prejade.com/talkieai/%E6%88%AA%E5%B1%8F2023-07-10%2011.20.08.png)
-![](http://minio.prejade.com/talkieai/%E6%88%AA%E5%B1%8F2023-07-10%2011.20.35.png)
-![](http://minio.prejade.com/talkieai/%E6%88%AA%E5%B1%8F2023-07-10%2011.22.48.png)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694157163931.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694157303262.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694157403018.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694157941483.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694158152152.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694158389243.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694158406909.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694158468766.jpg)
 ## 本地启动
 ```bash
 # 数据库，创建一个空的数据库，.env文件配置好数据库后启动服务，服务会自动生成相应的表
@@ -39,6 +36,7 @@ nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 &
 # 1. 安装依赖(前端只用了俩个依赖fingerprintjs2 与 recorder)
 npm install
 ```
+
 ## nginx配置(Web)
 ```bash
 # uniapp可以直接跨域请求服务端地址，也可通过nginx来配置反向代理

@@ -1,12 +1,12 @@
 import json
 from abc import ABC, abstractmethod
 
+from app.config import Config
 from app.core.logging import logging
-from typing import Dict, List
+import os
+from typing import Dict, List, Generator
 import openai
 from pydantic import BaseModel, constr
-
-"""chat_gpt相关调用"""
 
 
 class ApiKeyModel(BaseModel):
@@ -24,16 +24,16 @@ class ChatGPTInvokeDTO(BaseModel):
 
 
 class ChatGptComponent(ABC):
-    """调用chatgpt的工具类"""
-
     @abstractmethod
     def invoke_chat(self, dto: ChatGPTInvokeDTO, key: ApiKeyModel) -> Dict:
         pass
 
+    @abstractmethod
+    async def invoke_chat_stream(self, dto: ChatGPTInvokeDTO, key: ApiKeyModel):
+        pass
+
 
 class ChatGptLocalComponent(ChatGptComponent):
-    """本地调用chatgpt"""
-
     def invoke_chat(self, dto: ChatGPTInvokeDTO, key: ApiKeyModel) -> Dict:
         logging.info(f'invoke_chat, param:{json.dumps(dto.dict())}\nkey:{json.dumps(key.dict())}')
         response = openai.ChatCompletion.create(
@@ -45,3 +45,28 @@ class ChatGptLocalComponent(ChatGptComponent):
         result = response.choices[0].message.content
         logging.info(f'response:{result}')
         return {'data': result}
+
+    def invoke_chat_stream(self, dto: ChatGPTInvokeDTO, key: ApiKeyModel):
+        logging.info(f'invoke_chat, param:{json.dumps(dto.dict())}\nkey:{json.dumps(key.dict())}')
+        response = openai.ChatCompletion.create(
+            api_key=key.api_key,
+            organization=key.organization,
+            model=dto.model,
+            messages=dto.messages,
+            n=1,
+            stream=True
+        )
+        for chunk in response:
+            if chunk.choices and chunk.choices[0] and chunk.choices[0]['delta']:
+                delta = chunk.choices[0]['delta']
+                item_data = {
+                    "id": chunk['id'],
+                    "data": delta.content,
+                    "ended": 'false'
+                }
+            else:
+                item_data = {
+                    "id": chunk['id'],
+                    "ended": 'true'
+                }
+            yield item_data

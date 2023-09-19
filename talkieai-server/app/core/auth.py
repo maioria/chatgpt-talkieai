@@ -2,10 +2,9 @@ import time
 import jwt
 from fastapi import HTTPException
 
-"""基于jwt的认证模块"""
+
 
 class Auth:
-    """Auth"""
     def __init__(self, token_secret: str, algorithm: str, decoded_token_iat_key: str, expire_time: int,
                  decoded_token_user_key: str):
         self.token_secret = token_secret

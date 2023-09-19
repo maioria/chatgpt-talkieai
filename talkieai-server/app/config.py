@@ -31,11 +31,9 @@ class Config:
     CHAT_GPT_KEY = os.getenv('CHAT_GPT_KEY')
     # Remote ChatGPT Server
     CHAT_GPT_SERVER = os.getenv('CHAT_GPT_SERVER')
-    # 每天最多消息数量
-    MAX_DAY_SYSTEM_MESSAGE_COUNT = int(os.getenv('MAX_DAY_SYSTEM_MESSAGE_COUNT'))
-    # 每天最多提示数量
-    MAX_DAY_PROMPT_COUNT = int(os.getenv('MAX_DAY_PROMPT_COUNT'))
-    # 每天最多语音数量
-    MAX_DAY_SPEECH_COUNT = int(os.getenv('MAX_DAY_SPEECH_COUNT'))
-    # 每天最多文本转语音数量
-    MAX_DAY_TEXT_TO_VOICE_COUNT = int(os.getenv('MAX_DAY_TEXT_TO_VOICE_COUNT'))
+    # WeChat AppID
+    WECHAT_APP_ID = os.getenv('WECHAT_APP_ID')
+    # WeChat AppSecret
+    WECHAT_APP_SECRET = os.getenv('WECHAT_APP_SECRET')
+    # 微信服务基础地址
+    WE_CHAT_SERVER_URL = os.getenv('WE_CHAT_SERVER_URL')

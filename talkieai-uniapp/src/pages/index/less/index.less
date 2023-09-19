@@ -1,0 +1,53 @@
+@import url('../../../less/global.less');
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .index-page-card{
+	  margin: 0 36rpx;
+	  width: calc(100vw - 72rpx);
+	  background: linear-gradient(135deg, rgba(78,79,234,0.97) 0%, rgba(213,214,232,0.97) 100%);
+	  border-radius: 30rpx;
+	  display: flex;
+	  align-items: center;
+	  padding: 32rpx 44rpx;
+	  flex-direction: column;
+	  .index-header-box{
+	  	  width: 380rpx;
+	  	  height: 380rpx;
+		  box-sizing: border-box;
+	  	  border-radius: 190rpx;
+	  	  background: rgba(95, 96, 235, 1);
+		  padding: 20rpx;
+		  .index-header-img{
+			width: 340rpx;
+			height: 340rpx;
+			border-radius: 170rpx;
+			background: #333; 
+		  }
+	  }
+	  .index-btn{
+	  	  margin-top: 48rpx;
+		  width: 100%;
+		  
+	  }
+	  .index-change-btn{
+		  background: url('../../../static/change.png') no-repeat 24rpx center rgba(207, 207, 255, 1);
+		  background-size: 32rpx 26rpx;
+		  color:#3E2792;
+		  padding: 0 32rpx 0 80rpx;
+		  font-size: 26rpx;
+		  border:none;
+		  
+	  }
+	  .index-change-btn::after{
+		  border:none;
+	  }
+  }
+  .index-name{
+	  color:#fff;
+	  padding: 36rpx 24rpx;
+	  font-size: 30rpx;
+	  text-align: center;
+  }
+}

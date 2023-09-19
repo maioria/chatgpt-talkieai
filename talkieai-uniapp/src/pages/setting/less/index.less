@@ -1,0 +1,65 @@
+@import url('../../../less/global.less');
+.mine-content {
+	background: #fff;
+	min-height: calc(100vh - 100rpx);
+  .setting{
+	margin-top: 38rpx;
+	.setting-card{
+	  background: #fff;
+	  background-size: 16rpx 28rpx;
+	  border-bottom: 1px solid #e8e8e8;
+	  padding: 0 28rpx;
+	  display: flex;
+	  align-items: center;
+	  justify-content: space-between;
+	  padding: 50rpx 32rpx;
+	  .setting-card-logo{
+		  width: 28rpx;
+		  height: 28rpx;
+		  margin-right: 20rpx;
+	  }
+	  .setting-card-title{
+		  
+	  }
+	}
+  }
+  .setting-bot{
+	  padding: 36rpx;
+	  .setting-clear{
+	  	  width: 100%;
+	  	  background:#F1F1F3;
+	  	  border-radius: 30rpx;
+	  	  color:#333;
+		  font-size: 28rpx;
+		  margin-top: 150rpx;
+	  }
+	  .setting-clear::after{
+		  border:none;
+	  }
+  }
+ 
+	 .tab-box{
+		 width: 100%;
+		 background:#F1F1F3;
+		 border-radius: 30rpx;
+		 display: flex;
+		 flex: 1;
+		 padding: 10rpx;
+		 margin-top: 50rpx;
+		 .tab-item{
+			 display: block;
+			 flex:1;
+			 text-align: center;
+			 padding: 34rpx 0;
+			 transition: .3s all linear;
+		 }
+		 .tab-item:active{
+			 opacity: .9;
+		 }
+		 .tab-item-select{
+			 background: #fff;
+			 color:#333;
+			 border-radius: 30rpx;
+		 }
+	 }
+}
