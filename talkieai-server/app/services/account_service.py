@@ -12,63 +12,50 @@ from sqlalchemy.orm import Session
 from pydub import AudioSegment
 from app.config import Config
 from app.core import wechat_component, auth, azure_voice
-from app.core.azure_voice import speech_translate_text, speech_translate_text_compress, speech, speech_by_ssml
+from app.core.azure_voice import *
 from app.core.exceptions import UserAccessDeniedException
-from app.core.utils import (
-    short_uuid,
-    date_to_str,
-    friendly_time,
-    day_to_str,
-    save_file,
-    file_get_path,
-    get_date_str,
-)
-from app.db.entities import (
-    AccountEntity,
-    VisitorEntity,
-    MessageSessionEntity,
-    MessageEntity,
-    FileDetail,
-    AccountTranslateEntity,
-    AccountGrammarEntity,
-    SysCacheEntity,
-    AccountCollectEntity,
-    SettingsLanguageEntity,
-    SettingsRoleEntity,
-    FeedbackEntity,
-    AccountSettingsEntity,
-    SettingsRoleStyleEntity,
-    SettingsLanguageExampleEntity,
-)
-from app.models.account_models import (
-    WechatLoginDTO,
-    MessageType,
-    ChatDTO,
-    TransformSpeechDTO,
-    VoiceTranslateDTO,
-    TranslateDTO,
-    TransformContentSpeechDTO,
-    GrammarDTO,
-    PronunciationDTO,
-    WordDetailDTO,
-    CollectDTO,
-    PromptDTO,
-    TranslateTextDTO,
-    FeedbackDTO,
-    AccountSettingsDTO,
-    WordPracticeDTO,
-    MessagePracticeDTO,
-    CreateSessionDTO,
-)
+from app.core.utils import *
+from app.db.entities import *
+from app.models.account_models import *
 from app.core.chat_gpt import ApiKeyModel, ChatGPTInvokeDTO, ChatGptRemoteComponent
 from app.core.logging import logging
+from app.ai.chat_gpt_ai import ChatGptRemoteAI,ChatGptLocalAI
+from app.ai.models import *
+from app.ai.baidu_ai import BaiduAI
+from app.ai.zhipu_ai import ZhipuAI
+
+# 生成AI组件
+if Config.AI_SERVER == "BAIDU":
+    chat_ai = BaiduAI(
+        client_id=Config.BAIDU_AI_API_KEY,
+        client_secret=Config.BAIDU_AI_SECRET_KEY,
+                model=Config.BAIDU_AI_MODEL
+
+    )
+elif Config.AI_SERVER == "CHATGPT_LOCAL":
+    chat_ai = ChatGptLocalAI(
+        api_key=Config.CHAT_GPT_KEY,
+        organization=Config.CHAT_GPT_ORGANIZATION
+    )
+elif Config.AI_SERVER == "ZHIPU":
+    chat_ai = ZhipuAI(
+        api_key=Config.ZHIPU_AI_API_KEY,
+                model=Config.ZHIPU_AI_MODEL
+    )
+elif Config.AI_SERVER == "CHAT_GPT_REMOTE":
+    chat_ai = ChatGptRemoteAI(
+        api_key=Config.CHAT_GPT_KEY,
+        organization=Config.CHAT_GPT_ORGANIZATION,
+        server_url=Config.CHAT_GPT_SERVER,
+    )    
+else:
+    raise Exception("AI_SERVER is not supported")    
 
 MESSAGE_SYSTEM = "SYSTEM"
 ACCOUNT_SETTINGS_AUTO_PLAYING_VOICE = "auto_playing_voice"
 ACCOUNT_SETTINGS_PLAYING_VOICE_SPEED = "playing_voice_speed"
 ACCOUNT_SETTINGS_AUTO_TEXT_SHADOW = "auto_text_shadow"
 ACCOUNT_SETTINGS_AUTO_PRONUNCIATION = "auto_pronunciation"
-chat_gpt_component = ChatGptLocalComponent()
 
 
 class AccountService:
@@ -370,15 +357,7 @@ class AccountService:
             .filter_by(id=session_id, account_id=account_id)
             .first()
         )
-        messages = [
-            {
-                "role": "system",
-                "content": "You need to greet with "
-                + session.language
-                + " Simplified.",
-            }
-        ]
-        result = self.__invoke_chat(messages)
+        result = chat_ai.invoke_greet(GreetParams(language=session.language))['data']
         add_message = self.__add_system_message(session_id, account_id, result)
         return self.initMessageResult(add_message)
 
@@ -407,18 +386,6 @@ class AccountService:
             account_id, session_id, send_message_content, dto.file_name
         )
         send_message_id = send_message.id
-        base_template_str = "I want you to act as an $language speaking partner and improver, your name is $name. No matter what language I speak to you, you need to reply me in $language. I hope you keep your responses clean and limit your responses to 80 characters. I hope you will ask me a question from time to time in your reply. Now let's start practicing. Remember, I want you reply me in $language and your name is $name and do not respond with any other information about yourself."
-        if session.speech_style:
-            base_template_str = (
-                base_template_str
-                + " I want you to keep your tone "
-                + session.speech_style
-                + "."
-            )
-        system_content_template = Template(base_template_str)
-        params = {"language": session.language, "name": "Talkie"}
-        system_content = system_content_template.substitute(params)
-        messages = [{"role": "system", "content": system_content}]
         message_history = (
             self.db.query(MessageEntity)
             .filter(MessageEntity.session_id == session_id)
@@ -426,13 +393,13 @@ class AccountService:
             .slice(0, 6)
             .all()
         )
+        messages = []
         for message in reversed(message_history):
             if message.type == MessageType.SYSTEM.value:
                 messages.append({"role": "assistant", "content": message.content})
             else:
                 messages.append({"role": "user", "content": message.content})
-
-        invoke_result = self.__invoke_chat(messages)
+        invoke_result = chat_ai.invoke_message(MessageParams(language=session.language, name=Config.AI_NAME, messages=messages))['data']
         add_message = self.__add_system_message(session_id, account_id, invoke_result)
         return {
             "data": invoke_result,
@@ -518,34 +485,15 @@ class AccountService:
             target_language = message_session.language
         else:
             target_language = dto.target_language
-        messages = [
-            {
-                "role": "system",
-                "content": "You are a translation engine that can only translate text and cannot interpret it, ensuring that the translation is clear, concise, and coherent.",
-            },
-            {
-                "role": "user",
-                "content": f"Please translate the following text into {target_language} Simplified: {dto.text}",
-            },
-        ]
-        result = self.__invoke_chat(messages)
+
+        result = chat_ai.invoke_translate(TranslateParams(target_language=target_language, content=dto.text))['data']
         return result
 
     def translate(self, dto: TranslateDTO, account_id: str):
         message = self.db.query(MessageEntity).filter_by(id=dto.message_id).first()
         content = message.content
         target_language = "zh_CN"
-        messages = [
-            {
-                "role": "system",
-                "content": "You are a translation engine that can only translate text and cannot interpret it, ensuring that the translation is clear, concise, and coherent.",
-            },
-            {
-                "role": "user",
-                "content": f"Please translate the following text into {target_language} Simplified: {content}",
-            },
-        ]
-        result = self.__invoke_chat(messages)
+        result = chat_ai.invoke_translate(TranslateParams(target_language=target_language, content=content))['data']
         # 增加一条翻译记录，数据通过AccountTranslateEntity放到account_translate表中,
         # source_language通过message找到message_session的language
         message_session = (
@@ -649,14 +597,8 @@ class AccountService:
             self.db.query(MessageSessionEntity).filter_by(id=message.session_id).first()
         )
         content = message.content
-        messages = [
-            {
-                "role": "system",
-                "content": f"提供一段内容，只需要简洁快速的用中文返回这段内容中的语法错误，再根据提供的语言提供一句推荐示例，要求数据格式为json，语法是否错误放在属性isCorrect中，错误原因放在errorReason中，修正后的正确示例放在correctContent中，推荐示例放在better中，正确示例与推荐示例的语言要使用{message_session.language}",
-            },
-            {"role": "user", "content": f"内容: {content}"},
-        ]
-        result = json.loads(self.__invoke_chat(messages, temperature=0.2))
+        invoke_result = chat_ai.invoke_grammar_analysis(GrammarAnalysisParams(language=message_session.language, content=content))['data']
+        result = json.loads(invoke_result)
         result["original"] = content
         # result是json格式的字符串，把result 解析成json返回
         # 结果以字符串方式保存到数据库中
@@ -678,14 +620,8 @@ class AccountService:
         word = self.db.query(SysCacheEntity).filter_by(key=f"word_{dto.word}").first()
         if word:
             return json.loads(word.value)
-        # 如果没有数据，就调用AI接口获取数据
-        messages = [
-            {
-                "role": "system",
-                "content": f'提供一个单词，只需要简洁快速的用中文返回这个单词的音标与翻译，要求数据格式为json，音标放在属性phonetic中，音标的前后要加上"/"，翻译放在translation中， 这个单词是"{dto.word}"',
-            }
-        ]
-        result = json.loads(self.__invoke_chat(messages))
+        invoke_result = chat_ai.invoke_word_detail(WordDetailParams(word=dto.word))['data']
+        result = json.loads(invoke_result)
         result["original"] = dto.word
         # result 转换成字符串进行保存
         sys_cache = SysCacheEntity(key=f"word_{dto.word}", value=json.dumps(result))
@@ -867,20 +803,10 @@ class AccountService:
             .limit(5)
             .all()
         )
-        system_content = "下面是一场对话\n"
-        for message in reversed(messageEntities):
-            if message.type == MessageType.SYSTEM.value:
-                system_content = system_content + f"AI: {message.content}\n"
-            else:
-                system_content = system_content + f"用户: {message.content}\n"
-        system_content = (
-            system_content
-            + "现在你需要做为一个用户来回答下一句话，只是答复不可以有提供帮助与提问问题的意思，要求给出3个不同答复，json数组格式，语言使用"
-            + target_language
-        )
-        messages = [{"role": "system", "content": system_content}]
-
-        result = self.__invoke_chat(messages, temperature=0.2)
+        messages = []
+        for message in messageEntities:
+            messages.append(self.initMessageResult(message))
+        result = chat_ai.invoke_prompt_sentence(PromptSentenceParams(language=target_language, messages=messages))['data']
         return json.loads(result)
 
     def add_feedback(self, dto: FeedbackDTO, account_id: str):
@@ -1138,17 +1064,3 @@ class AccountService:
             "create_time": date_to_str(session.create_time),
             "friendly_time": friendly_time(date_to_str(session.create_time)),
         }
-
-    def __invoke_chat(self, messages: List[Dict], temperature=0.5):
-        """调用chat gpt"""
-        invoke_chat_json = chat_gpt_component.invoke_chat(
-            ChatGPTInvokeDTO(
-                messages=messages, max_tokens=300, temperature=temperature
-            ),
-            ApiKeyModel(
-                organization=Config.CHAT_GPT_ORGANIZATION, api_key=Config.CHAT_GPT_KEY
-            ),
-        )
-        invoke_result = invoke_chat_json["data"]
-
-        return invoke_result
