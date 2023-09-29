@@ -2,9 +2,9 @@
   <view class="common-header"
     :style="{ height: CustomBar + 'px', backgroundColor: (backgroundColor ? backgroundColor : 'inhert') }">
     <view class="common-header-content" :style="style">
-      <view class="left" @tap="handleBack">
+      <view class="left">
         <slot name="left">
-          <view class="left-icon-box">
+          <view class="left-icon-box" @tap="handleBack">
             <image v-if="leftIcon" class="back-icon" src="/static/icon_header_back.png"></image>
           </view>
         </slot>
@@ -43,10 +43,6 @@ const style = computed(
   () => `height:${CustomBar}px;padding-top:${StatusBar}px;`
 );
 const handleBack = () => {
-  // 提高灵敏度，监听外层的返回事件，如果父组件未设置，逻辑不执行就可以
-  if (!props.leftIcon) {
-    return;
-  }
   if (props.backFn) {
     props.backFn();
   } else {

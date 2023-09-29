@@ -173,10 +173,10 @@ const handleSend = () => {
 }
 
 .recorder-completed-box,
-.recorder-box, .recordering-box {
-  padding: 0 90rpx 0 90rpx;
+.recorder-box {
+  padding: 24rpx 90rpx 0 90rpx;
   display: flex;
-  position: relative;
+  // gap: 100rpx;
   box-sizing: border-box;
   width: 100%;
   align-items: center;
@@ -244,7 +244,7 @@ const handleSend = () => {
 }
 
 .recorder-completed-box {
-  padding-top: 20rpx;
+  padding: 40rpx 20rpx 0 20rpx;
 }
 
 .recorder-box {
@@ -283,6 +283,11 @@ const handleSend = () => {
 }
 
 .recordering-box {
+  display: flex;
+  position: relative;
+  padding: 24rpx 90rpx 0 90rpx;
+  justify-content: center;
+  align-items: center;
 
   .outter-circle.animated {
     width: 176rpx;

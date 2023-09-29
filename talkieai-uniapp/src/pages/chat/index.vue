@@ -184,68 +184,15 @@ const sendSpeech = (fileName: string) => {
 
   scrollToBottom();
 
-  chatRequest
-    .sessionChatInvoke({
-      sessionId: session.value.id,
-      file_name: fileName,
-    })
-    .then((data) => {
-      if (data.status === 'FAILED') {
-        // 提示错误
-        uni.showToast({
-          title: data.message,
-          icon: "none",
-        });
+  chatRequest.transformText({file_name:fileName, sessionId:session.value.id})
+      .then(data=>{
         messages.value = messages.value.filter(
-          (item) => (item.id as any) !== ownertTimestamp
+            (item) => (item.id as any) !== ownertTimestamp
         );
-        return;
-      }
-
-      data = data.data;
-      messages.value = messages.value.filter(
-        (item) => (item.id as any) !== ownertTimestamp
-      );
-      // 自动语法解析要放在后面设置值，不然会因为message不存在而报错
-      messages.value.push({
-        id: data.send_message_id,
-        file_name: fileName,
-        role: "USER",
-        session_id: session.value.id,
-        content: data.send_message_content,
-        owner: true,
-        auto_hint: false,
-        auto_play: false,
-        auto_pronunciation: accountSetting.value.auto_pronunciation,
+          let text = data.data;
+          console.log(text);
+          sendMessage(text, fileName)
       });
-      messages.value.push({
-        id: data.id,
-        session_id: session.value.id,
-        content: data.data,
-        owner: false,
-        file_name: fileName,
-        role: "ASSISTANT",
-        auto_hint: accountSetting.value.auto_text_shadow,
-        auto_play: accountSetting.value.auto_playing_voice,
-        auto_pronunciation: false,
-      });
-      // AI消息自动播放与模糊
-      nextTick(() => {
-        dealMessage(ownMessage);
-        scrollToBottom();
-      });
-    })
-    .catch((e) => {
-      console.error(e);
-      // 提示错误
-      uni.showToast({
-        title: e.message,
-        icon: "none",
-      });
-      messages.value = messages.value.filter(
-        (item) => (item.id as any) !== ownertTimestamp
-      );
-    });
 }
 
 /**
@@ -300,7 +247,6 @@ const sendMessage = (message?: string, fileName?: string) => {
       });
       // AI消息自动播放与模糊
       nextTick(() => {
-        dealMessage();
         scrollToBottom();
       });
     })
@@ -338,7 +284,6 @@ const initData = (sessionId: string) => {
         });
         // AI消息自动播放与模糊
         nextTick(() => {
-          dealMessage();
           scrollToBottom();
         });
       })
@@ -361,27 +306,6 @@ const initData = (sessionId: string) => {
     scrollToBottom();
   });
 };
-
-/**
- * 自动检查并进行消息处理
- */
-const dealMessage = (ownMessage?: Message) => {
-  // nextTick(() => {
-  // // 小程序在苹果手机上获取不到ref，这里需要加一个延时
-  //   setTimeout(() => {
-  //     if (accountSetting.value.auto_text_shadow) {
-  //       messageListRef.value[messageListRef.value.length - 1].autoHandleHint();
-  //     }
-  //     if (accountSetting.value.auto_playing_voice) {
-  //       messageListRef.value[messageListRef.value.length - 1].autoPlayAudio();
-  //     }
-  //     // 用户自动评分
-  //     if (ownMessage && accountSetting.value.auto_pronunciation && ownMessage.file_name) {
-  //       messageListRef.value[messageListRef.value.length - 2].autoPronunciation();
-  //     }
-  //   }, 100)
-  // });
-}
 
 /**
  * 回到主页面

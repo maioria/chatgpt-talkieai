@@ -1,21 +1,18 @@
 <template>
     <uni-popup ref="wordAnalysisPopup" type="bottom" :background-color="popupBackgoundColor">
         <view class="word-analysis-container">
-            <view @tap="handleClose" class="close-icon-box">
-                <image class="close-icon" src="/static/icon_close.png"></image>
+            <view class="close-icon-box">
+                <image @tap="handleClose" class="close-icon" src="/static/icon_close.png"></image>
             </view>
             <LoadingRound v-if="wordDetailLoading" :min-height="200"></LoadingRound>
             <view v-else-if="wordPhoneticSymbol" class="content">
                 <view class="word-box row-bc">
-                    <view class="word-box-pron">
-                        <text class="word-text">{{ word }}</text>
-                        <AudioPlayer class="pronunciation-play-icon" :content="word" />
-                    </view>
+                    <text class="word-text">{{ word }}</text>
                     <Collect type="WORD" :content="word" />
                 </view>
                 <view class="pronunciation-box row-sc">
                     <text class="pronunciation-text">{{ wordPhoneticSymbol }}</text>
-
+                    <AudioPlayer class="pronunciation-play-icon" :content="word" />
                 </view>
                 <view class="translation-box row-bc">
                     <text class="translatetion-text">{{ wordExplain }}</text>
@@ -79,18 +76,12 @@ defineExpose({
     border-radius: 30rpx 30rpx 0 0;
     position: relative;
 
-    .close-icon-box {
+    .close-icon {
         position: absolute;
-        padding: 32rpx;
-        top: 0;
-        right: 0;
-        z-index: 99;
-        line-height: 20rpx;
-
-        .close-icon {
-            width: 20rpx;
-            height: 20rpx;
-        }
+        top: 32rpx;
+        right: 32rpx;
+        width: 20rpx;
+        height: 20rpx;
     }
 
     .content {
@@ -101,19 +92,12 @@ defineExpose({
         .word-box {
             margin-top: 16rpx;
 
-            .word-box-pron {
-                display: flex;
-                align-items: center;
-
-                .word-text {
-                    font-size: 48rpx;
-                    word-break: break-all;
-                    color: #333;
-                    font-weight: 700;
-                    margin-right: 24rpx;
-                }
+            .word-text {
+                font-size: 48rpx;
+                word-break: break-all;
+                color: #333;
+                font-weight: 700;
             }
-
         }
 
         .pronunciation-box {

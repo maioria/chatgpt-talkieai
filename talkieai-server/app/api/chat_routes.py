@@ -1,8 +1,12 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+import os
+from fastapi import APIRouter, Depends, Response
+from fastapi.responses import StreamingResponse
 
+from sqlalchemy.orm import Session
 from app.core import get_current_account
 from app.db import get_db
+from app.config import Config
+from app.core.logging import logging
 from app.models.account_models import (
     ChatDTO,
     TransformSpeechDTO,
@@ -89,15 +93,28 @@ def message_practice_api(
         data=account_service.message_practice(message_id, dto, account_id)
     )    
 
-@router.post("/speech")
+@router.get("/speech")
 def speech_api(
-    dto: TransformSpeechDTO,
-    db: Session = Depends(get_db),
-    account_id: str = Depends(get_current_account),
-):
+    message_id: str,
+    db: Session = Depends(get_db), 
+    response: Response = Response(),
+    account_id: str = Depends(get_current_account)):
     """消息转语音"""
+    logging.info("接收数据")
     account_service = AccountService(db)
-    return ApiResponse(data=account_service.message_speech(dto, account_id))
+    speech_result = account_service.message_speech(message_id, account_id)
+    """获取文件"""
+    file_path = f"{Config.TEMP_SAVE_FILE_PATH}/{speech_result['file']}"
+    # 判断文件是否存在
+    with open(file_path, "rb") as file:
+        contents = file.read()
+        headers = {
+            "Content-Type": "audio/wav",
+            "Content-Disposition": "attachment",
+            "filename": speech_result['file']
+        }
+        logging.info("开始返回")
+        return Response(content=contents, media_type="application/octet-stream", headers=headers)
 
 
 @router.post("/translate")
@@ -122,15 +139,32 @@ def translate_text_api(
     return ApiResponse(data=account_service.translate_text(dto, account_id))
 
 
-@router.post("/speech-content")
+@router.get("/speech-content")
 def speech_content_api(
-    dto: TransformContentSpeechDTO,
+    content: str,
+    session_id: str = None,
+    speech_role_name:str = "en-US-JennyNeural",
     db: Session = Depends(get_db),
     account_id: str = Depends(get_current_account),
 ):
     """消息转语音"""
     account_service = AccountService(db)
-    return ApiResponse(data=account_service.message_speech_content(dto, account_id))
+    speech_result = data=account_service.message_speech_content(TransformContentSpeechDTO(content=content, speech_role_name=speech_role_name, session_id=session_id), account_id)
+    """获取文件"""
+    file_path = f"{Config.TEMP_SAVE_FILE_PATH}/{speech_result['file']}"
+    logging.info(file_path)
+    # 判断文件是否存在
+    with open(file_path, "rb") as file:
+        contents = file.read()
+        headers = {
+            "Content-Type": "audio/wav",
+            "Content-Disposition": "attachment",
+            "filename": speech_result['file']
+        }
+        logging.info("开始返回")
+        return Response(content=contents, media_type="application/octet-stream", headers=headers)
+
+
 
 
 @router.post("/grammar")

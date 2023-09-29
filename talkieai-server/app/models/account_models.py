@@ -65,7 +65,7 @@ class TransformContentSpeechDTO(BaseModel):
     session_id: str = None
     content: constr(max_length=500)
     speech_role_name: str = "en-US-JennyNeural"
-    speech_style: str = None
+    speech_style: str = "neutral"
     speech_rate: str = "1.0"
     language: str = "en-US"
 

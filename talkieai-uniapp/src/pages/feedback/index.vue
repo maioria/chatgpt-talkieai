@@ -12,9 +12,9 @@
 					<!-- <textarea class="feedback-textarea" v-model="content" /> -->
 					<!-- <view class="placeholder-style" v-if="content.length==0">反馈意见可以是使用过程中遇到的问题，也可以是产品改进意见</view> -->
 				</view>
-				<view class="feedback-input-box">
+				<!-- <view class="feedback-input-box">
 					<input class="feedback-input" v-model="contact" placeholder="留下你的手机号或微信，方便我们沟通联系" />
-				</view>
+				</view> -->
 				<view class="feedback-btn-box">
 					<button @tap="handleAddFeedback" class="common-button feedback-btn">提交反馈</button>
 				</view>
@@ -40,7 +40,7 @@ import feedBackRequest from '@/api/feedback';
 
 const pushStatus = ref(false);
 const content = ref('');
-const contact = ref('');
+const contact = ref('user');
 
 onMounted(() => {
 	uni.setNavigationBarTitle({
@@ -50,10 +50,10 @@ onMounted(() => {
 
 const handleAddFeedback = () => {
 	// content与contact都不能为空
-	if (!content.value || !contact.value) {
+	if (!content.value) {
 		// 为用户提示不能为空
 		uni.showToast({
-			title: '内容与联系方式不能为空',
+			title: '内容不能为空',
 			icon: 'none',
 			duration: 2000
 		});

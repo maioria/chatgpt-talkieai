@@ -20,8 +20,9 @@ class AudioPlayer {
   }
 
   playAudio({ audioUrl, listener }: { audioUrl: string; listener: Listener }) {
-    let audioSrc = __config.basePath + "/files/" + audioUrl;
-    console.log(audioSrc);
+    // let audioSrc = __config.basePath + "/files/" + audioUrl;
+    // console.log(audioSrc);
+    let audioSrc = audioUrl;
     if (this.audioContext) {
       console.log("stop start..");
       const oldSrc = this.audioContext.src;
@@ -36,7 +37,7 @@ class AudioPlayer {
     }
 
     let innerAudioContext = uni.createInnerAudioContext();
-
+    console.log('start play audio' + audioSrc)
     innerAudioContext.src = audioSrc;
     innerAudioContext.autoplay = true;
 
@@ -70,6 +71,7 @@ class AudioPlayer {
     innerAudioContext.onError((res: any) => {
       // ios下如果error的话走这里
       console.log("onError");
+      console.log(res);
       if (this.isPlaying) {
         if (listener.error) {
           listener.error();

@@ -8,7 +8,9 @@ auth = Auth(Config.TOKEN_SECRET, Config.ALGORITHM, Config.DECODED_TOKEN_IAT_KEY,
             Config.DECODED_TOKEN_USER_KEY)
 
 
-def get_current_account(x_token: str = Header(None)):
+def get_current_account(x_token: str = Header(None), x_token_query: str = None):
+    if x_token_query:
+        return auth.get_current_account(x_token_query)
     return auth.get_current_account(x_token)
 
 # 微信小程序登录

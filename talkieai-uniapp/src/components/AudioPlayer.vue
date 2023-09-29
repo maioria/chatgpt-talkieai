@@ -32,6 +32,7 @@ import LoadingRound from "@/components/LoadingRound.vue";
 import { nextTick } from "vue";
 
 import audioPlayer from "./audioPlayerExecuter"; // 导入共享对象
+import __config from "@/config/env";
 
 const props = defineProps<{
   messageId?: string | null;
@@ -56,10 +57,12 @@ onMounted(() => {
 const handleSpeech = async () => {
   // 语音文件直接播放
   if (props.fileName) {
-    speechLoading.value = true;
     audioPlayer.playAudio({
-      audioUrl: props.fileName,
+      audioUrl: `${__config.basePath}/files/${props.fileName}`,
       listener: {
+        playing: () => {
+          speechLoading.value = true;
+        },
         success: () => {
           speechLoading.value = false;
         },
@@ -74,23 +77,21 @@ const handleSpeech = async () => {
   // 聊天消息直接转换成语音
   if (props.messageId) {
     transformFileLoading.value = true;
-    const data = await chatRequest.transferSpeech({
-      message_id: props.messageId,
-    });
-    transformFileLoading.value = false;
-    const audioUrl = data.data.file;
     audioPlayer.playAudio({
-      audioUrl: audioUrl,
+      audioUrl: `${__config.basePath}/speech?message_id=${props.messageId}&x_token_query=${uni.getStorageSync("x-token") ? uni.getStorageSync("x-token") : ""}`,
       listener: {
         playing: () => {
+          transformFileLoading.value = false;
           speechLoading.value = true;
         },
         success: () => {
           console.log("success", speechLoading.value);
+          transformFileLoading.value = false;
           speechLoading.value = false;
         },
         error: () => {
           console.log("error", speechLoading.value);
+          transformFileLoading.value = false;
           speechLoading.value = false;
         },
       },
@@ -102,18 +103,31 @@ const handleSpeech = async () => {
   if (props.content) {
     try {
       transformFileLoading.value = true;
-      const data = await chatRequest.speechContent({
-        content: props.content,
-        speech_role_name: props.speech_role_name,
-        session_id: props.sessionId,
-      });
-      transformFileLoading.value = false;
-      speechLoading.value = true;
-      const audioUrl = data.data.file;
-
+      // const data = await chatRequest.speechContent({
+      //   content: props.content,
+      //   speech_role_name: props.speech_role_name,
+      //   session_id: props.sessionId,
+      // });
+      // transformFileLoading.value = false;
+      // speechLoading.value = true;
+      // const audioUrl = data.data.file;
+      let audioUrl = `${__config.basePath}/speech-content?content=${props.content}`;
+      if (props.speech_role_name) {
+        audioUrl += `&speech_role_name=${props.speech_role_name}`;
+      }
+      if (props.sessionId) {
+        audioUrl += `&session_id=${props.sessionId}`;
+      }
+      if (uni.getStorageSync("x-token")) {
+        audioUrl += `&x_token_query=${uni.getStorageSync("x-token")}`;
+      }
       audioPlayer.playAudio({
-        audioUrl,
+        audioUrl: audioUrl,
         listener: {
+          playing: () => {
+          transformFileLoading.value = false;
+          speechLoading.value = true;
+          },
           success: () => {
             speechLoading.value = false;
           },

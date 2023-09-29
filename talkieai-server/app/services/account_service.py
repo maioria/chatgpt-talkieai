@@ -2,7 +2,7 @@ import hashlib
 import json
 import os
 import re
-from datetime import datetime
+import datetime
 from typing import List, Dict
 
 from fastapi import UploadFile
@@ -17,12 +17,12 @@ from app.core.exceptions import UserAccessDeniedException
 from app.core.utils import *
 from app.db.entities import *
 from app.models.account_models import *
-from app.core.chat_gpt import ApiKeyModel, ChatGPTInvokeDTO, ChatGptRemoteComponent
 from app.core.logging import logging
 from app.ai.chat_gpt_ai import ChatGptRemoteAI,ChatGptLocalAI
 from app.ai.models import *
 from app.ai.baidu_ai import BaiduAI
 from app.ai.zhipu_ai import ZhipuAI
+from app.core.logging import logging
 
 # 生成AI组件
 if Config.AI_SERVER == "BAIDU":
@@ -116,7 +116,7 @@ class AccountService:
     def get_user_current_day_system_message_count(self, account_id: str):
         """获取用户当天系统消息次数"""
         # 获取当天0点的时间进行筛选
-        today = day_to_str(datetime.now())
+        today = day_to_str(datetime.datetime.now())
         return (
             self.db.query(MessageEntity)
             .filter_by(account_id=account_id, type=MessageType.SYSTEM.value)
@@ -301,10 +301,8 @@ class AccountService:
         # 如果上传的是mp3格式(暂时只有android手机只能用mp3格式), 就转换成wav返回, 为了后续azure服务解析音频(mp3会解析失败), 因为chat接口本身比较慢，所以在这里进行转换
         if file.filename.endswith(".mp3"):
             mp3_file_path = file_get_path(file_name)
-            print(mp3_file_path)
             wav_file_name = file_name.replace(".mp3", ".wav")
             wav_file_path = file_get_path(wav_file_name)
-            print(wav_file_path)
             sound = AudioSegment.from_mp3(mp3_file_path)
             sound.export(wav_file_path, format="wav")
             # mp3文件需要删除
@@ -410,16 +408,18 @@ class AccountService:
             "create_time": date_to_str(add_message.create_time),
         }
 
-    def message_speech(self, dto: TransformSpeechDTO, account_id: str):
+    def message_speech(self, message_id: str, account_id: str):
         """文字转语音"""
         # 如果没有，就生成一个
-        message = self.db.query(MessageEntity).filter_by(id=dto.message_id).first()
+        logging.info('1')
+        message = self.db.query(MessageEntity).filter_by(id=message_id).first()
         # 获取信息对应的message_session信息，获取对应的配置
-
+        logging.info('2')
         speech_rate_setting = self.get_setting(
             account_id, ACCOUNT_SETTINGS_PLAYING_VOICE_SPEED
         )
 
+        logging.info('3')
         speech_rate = "1.0"
         if speech_rate_setting:
             if speech_rate_setting == "0":
@@ -438,42 +438,91 @@ class AccountService:
             .order_by(FileDetail.create_time.desc())
             .first()
         )
-        if not file_detail:
+        logging.info('4')
+        if True:
             session = (
                 self.db.query(MessageSessionEntity)
                 .filter_by(id=message.session_id)
                 .first()
             )
+            
+            logging.info('5')
             full_file_name = f"{Config.TEMP_SAVE_FILE_PATH}/{filename}"
-
             # 如果speech_rate为NORMAL并且feel是NEUTRAL，则使用speech直接转换，否则使用speech_by_ssml转换
-            if speech_rate == "1.0":
-                speech(
-                    message.content, full_file_name, voice_name=session.speech_role_name
-                )
-            else:
-                speech_by_ssml(
-                    message.content,
-                    full_file_name,
-                    voice_name=session.speech_role_name,
-                    speech_rate=speech_rate,
-                    feel=session.speech_style,
-                    targetLang=session.language,
-                )
+            # if speech_rate == "1.0":
+            #     speech(
+            #         message.content, full_file_name, voice_name=session.speech_role_name
+            #     )
+            # else:
+            speech_by_ssml(
+                message.content,
+                full_file_name,
+                voice_name=session.speech_role_name,
+                speech_rate=speech_rate,
+                feel=session.speech_style,
+                targetLang=session.language,
+            )
+            logging.info('6')
             file_detail = FileDetail(
                 id=short_uuid(),
                 file_path=filename,
                 module="SPEECH_VOICE",
                 file_name=filename,
-                module_id=dto.message_id,
+                module_id=message_id,
                 file_ext="wav",
                 created_by=account_id,
             )
             self.db.add(file_detail)
             message.file_name = filename
-            self.db.commit()
-            self.db.flush()
+            # self.db.commit()
+            # self.db.flush()
         return {"file": file_detail.file_name}
+        # if not file_detail:
+        #     session = (
+        #         self.db.query(MessageSessionEntity)
+        #         .filter_by(id=message.session_id)
+        #         .first()
+        #     )
+        #     full_file_name = f"{Config.TEMP_SAVE_FILE_PATH}/{filename}"
+        #     file_trunk = speech_stream_by_ssml(
+        #         message.content,
+        #         voice_name=session.speech_role_name,
+        #         speech_rate=speech_rate,
+        #         feel=session.speech_style,
+        #         targetLang=session.language,
+        #     )
+        #     # return file_trunk
+        #     for item in file_trunk:
+        #         print('*****************')
+        #         yield item
+            # 如果speech_rate为NORMAL并且feel是NEUTRAL，则使用speech直接转换，否则使用speech_by_ssml转换
+        #     if speech_rate == "1.0":
+        #         speech(
+        #             message.content, full_file_name, voice_name=session.speech_role_name
+        #         )
+        #     else:
+        #         speech_by_ssml(
+        #             message.content,
+        #             full_file_name,
+        #             voice_name=session.speech_role_name,
+        #             speech_rate=speech_rate,
+        #             feel=session.speech_style,
+        #             targetLang=session.language,
+        #         )
+        #     file_detail = FileDetail(
+        #         id=short_uuid(),
+        #         file_path=filename,
+        #         module="SPEECH_VOICE",
+        #         file_name=filename,
+        #         module_id=dto.message_id,
+        #         file_ext="wav",
+        #         created_by=account_id,
+        #     )
+        #     self.db.add(file_detail)
+        #     message.file_name = filename
+        #     self.db.commit()
+        #     self.db.flush()
+        # return {"file": file_detail.file_name}
 
     def translate_text(self, dto: TranslateTextDTO, account_id: str):
         """翻译"""
@@ -555,17 +604,15 @@ class AccountService:
             speech_style = dto.speech_style
             language = dto.language
 
-        if speech_rate == "1.0" and not speech_style:
-            speech(dto.content, full_file_name, voice_name=speech_role_name)
-        else:
-            speech_by_ssml(
-                dto.content,
-                full_file_name,
-                voice_name=speech_role_name,
-                speech_rate=speech_rate,
-                feel=speech_style,
-                targetLang=language,
-            )
+        
+        speech_by_ssml(
+            dto.content,
+            full_file_name,
+            voice_name=speech_role_name,
+            speech_rate=speech_rate,
+            feel=speech_style,
+            targetLang=language,
+        )
         file_detail = FileDetail(
             id=short_uuid(),
             file_path=filename,
@@ -678,7 +725,7 @@ class AccountService:
             )
         if collect:
             collect.is_deleted = 1
-            collect.update_time = datetime.now()
+            collect.update_time = datetime.datetime.now()
             self.db.commit()
         return
 
@@ -876,7 +923,7 @@ class AccountService:
         if collect:
             if collect.is_deleted == 1:
                 collect.is_deleted = 0
-                collect.update_time = datetime.now()
+                collect.update_time = datetime.datetime.now()
 
             self.db.commit()
             return
