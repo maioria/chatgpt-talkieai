@@ -70,8 +70,8 @@ class SettingsRoleEntity(Base):
     name = Column("name", String(255), nullable=False)
     short_name = Column("short_name", String(80), nullable=False)
     # 所属国家
-    country = Column("country", String(80), nullable=False)
-    country_name = Column("country_name", String(80), nullable=False)
+    country = Column("country", String(80), nullable=True)
+    country_name = Column("country_name", String(80), nullable=True)
     gender = Column("gender", String(35), nullable=True)
     # 头像地址
     avatar = Column("avatar", String(350), nullable=True)
@@ -272,7 +272,7 @@ class SysDictDataEntity(Base):
     dict_value = Column("dict_value", String(80), nullable=False)
     status = Column("status", String(80), nullable=False, default= "1")
     create_time = Column("create_time", DateTime, default=datetime.datetime.now)
-    update_time = Column("update_time", DateTime, default=datetime.datetime.now)    
+    update_time = Column("update_time", DateTime, default=datetime.datetime.now)
 
 # 数据库未创建表的话自动创建表
 Base.metadata.create_all(engine)
