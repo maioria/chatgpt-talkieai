@@ -58,4 +58,4 @@ class ChatGptLocalAI(SystemBaseAI):
             messages=request_dto.messages
         )
         result = response.choices[0].message.content
-        return result
+        return {'data': result}
