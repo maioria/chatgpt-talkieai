@@ -2,7 +2,7 @@
   "extends": "@vue/tsconfig/tsconfig.json",
   "compilerOptions": {
     "sourceMap": true,
-    "baseUrl": "../../../gitee/scio-talkie/scio-talkie-uniapp",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
