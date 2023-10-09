@@ -33,12 +33,12 @@ class Speech {
   }
 
   handleVoiceStart({
-    success,
-    cancel,
-    error,
-    interval,
-    processing,
-  }: {
+                     success,
+                     cancel,
+                     error,
+                     interval,
+                     processing,
+                   }: {
     success: Function;
     cancel: Function;
     error: Function;
@@ -64,7 +64,7 @@ class Speech {
   mpWeixinVoiceStart() {
     let self = this;
     let recorderManager = uni.getRecorderManager();
-	console.log(recorderManager)
+    console.log(recorderManager)
     // 如果是andoird手机使用，则须要设置mp3格式，否则无法播放
     let format = "wav";
 
@@ -81,7 +81,7 @@ class Speech {
       encodeBitRate: 192000,
       format: format,
     });
-	console.log('speech start..')
+    console.log('speech start..')
     self.recorder.start = true;
     self.recorder.remainingTime = MAXIMUM_RECORDING_TIME;
     self.intervalId = setInterval(() => {
@@ -96,7 +96,7 @@ class Speech {
     }, 1000);
 
     recorderManager.onStop((res: any) => {
-		console.log('speech on stop..' + res.tempFilePath);
+      console.log('speech on stop..' + res.tempFilePath);
       self.handleProcessWxEndVoice({
         filePath: res.tempFilePath,
       });
@@ -183,7 +183,7 @@ class Speech {
     }
 
     // #ifndef H5
-	console.log('speech trigger end..')
+    console.log('speech trigger end..')
     self.handleWxEndVoice();
     // #endif
 
@@ -194,14 +194,14 @@ class Speech {
 
   handleWxEndVoice() {
     let self = this;
-	console.log('execute stop1')
-	console.log(self.recorder)
+    console.log('execute stop1')
+    console.log(self.recorder)
     self.recorder.wxRecorderManager.stop();
-	console.log('execute stop')
+    console.log('execute stop')
   }
 
   handleProcessWxEndVoice({ filePath }: { filePath: string }) {
-	  console.log('speech end...')
+    console.log('speech end...')
     let self = this;
     if (self.listener.processing) {
       self.listener.processing();

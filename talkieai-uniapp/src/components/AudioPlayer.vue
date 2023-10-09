@@ -4,18 +4,18 @@
       <LoadingRound v-if="transformFileLoading"></LoadingRound>
       <template v-else>
         <image
-          v-if="speechLoading"
-          class="icon message-playing-icon play-ico"
-          :class="{ reverse: direction && direction == 'right' }"
-          src="/static/voice_playing.gif"
-          mode="heightFix"
+            v-if="speechLoading"
+            class="icon message-playing-icon play-ico"
+            :class="{ reverse: direction && direction == 'right' }"
+            src="/static/voice_playing.gif"
+            mode="heightFix"
         ></image>
         <image
-          v-else
-          class="icon message-playing-icon playing-ico"
-          :class="{ reverse: direction && direction == 'right' }"
-          src="/static/voice_play.png"
-          mode="heightFix"
+            v-else
+            class="icon message-playing-icon playing-ico"
+            :class="{ reverse: direction && direction == 'right' }"
+            src="/static/voice_play.png"
+            mode="heightFix"
         ></image>
       </template>
     </view>
@@ -85,12 +85,10 @@ const handleSpeech = async () => {
           speechLoading.value = true;
         },
         success: () => {
-          console.log("success", speechLoading.value);
           transformFileLoading.value = false;
           speechLoading.value = false;
         },
         error: () => {
-          console.log("error", speechLoading.value);
           transformFileLoading.value = false;
           speechLoading.value = false;
         },
@@ -125,8 +123,8 @@ const handleSpeech = async () => {
         audioUrl: audioUrl,
         listener: {
           playing: () => {
-          transformFileLoading.value = false;
-          speechLoading.value = true;
+            transformFileLoading.value = false;
+            speechLoading.value = true;
           },
           success: () => {
             speechLoading.value = false;

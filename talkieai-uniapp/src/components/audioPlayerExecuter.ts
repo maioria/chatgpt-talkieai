@@ -9,45 +9,56 @@ interface Listener {
 
 class AudioPlayer {
   private audioContext: any = null;
-  private isPlaying: any = false;
   constructor() {}
 
+  /**
+   * 录音的时候使用，录音前要先关闭所有音频播放
+   */
   stopAudio() {
     if (this.audioContext) {
       this.audioContext.stop();
-      this.audioContext.destory && this.audioContext.destory();
     }
   }
 
   playAudio({ audioUrl, listener }: { audioUrl: string; listener: Listener }) {
-    // let audioSrc = __config.basePath + "/files/" + audioUrl;
-    // console.log(audioSrc);
     let audioSrc = audioUrl;
     if (this.audioContext) {
-      console.log("stop start..");
+      console.log(this.audioContext.src);
+    }
+    if (this.audioContext) {
+      console.log("destory.." + this.audioContext.src);
       const oldSrc = this.audioContext.src;
       this.audioContext.stop();
-      this.audioContext.pause();
-      console.log("stop end..");
-      this.audioContext.destory && this.audioContext.destory();
+      // this.audioContext.destory && this.audioContext.destory();
+      // this.audioContext.stop();
+      // this.audioContext.pause();
       if (oldSrc === audioSrc) {
         this.audioContext = null;
         return;
       }
     }
 
-    let innerAudioContext = uni.createInnerAudioContext();
-    console.log('start play audio' + audioSrc)
-    innerAudioContext.src = audioSrc;
-    innerAudioContext.autoplay = true;
+    let innerAudioContext = this.createInnerAudioContext(audioUrl, listener);
+    this.audioContext = innerAudioContext;
+    innerAudioContext.play(); // 播放
+  }
 
-    // innerAudioContext.onCanplay(() => {
-    //   // innerAudioContext.play();
-    // });
+  createInnerAudioContext(src: string, listener: Listener) {
+    let innerAudioContext: any = null;
+    // #ifdef MP-WEIXIN
+    innerAudioContext = wx.createInnerAudioContext({
+      useWebAudioImplement: true,
+    });
+    // #endif
+
+    // #ifndef MP-WEIXIN
+    innerAudioContext = uni.createInnerAudioContext();
+    // #endif
+
+    innerAudioContext.src = src;
 
     innerAudioContext.onPlay(() => {
-      console.log("play");
-      this.isPlaying = true;
+      console.log("onPlay");
       if (listener.playing) {
         listener.playing();
       }
@@ -57,6 +68,8 @@ class AudioPlayer {
       if (listener.success) {
         listener.success();
       }
+      innerAudioContext.destory && innerAudioContext.destory();
+      this.audioContext = null;
       // this.audioContext=null;
     });
     innerAudioContext.onEnded(() => {
@@ -64,47 +77,21 @@ class AudioPlayer {
       if (listener.success) {
         listener.success();
       }
-      this.audioContext.src = "";
-      this.audioContext.destory && this.audioContext.destory();
-      console.log("destory");
+      console.log("end audio context1");
+      innerAudioContext.destory && innerAudioContext.destory();
+      this.audioContext = null;
+      console.log("end audio context2");
+      console.log(this.audioContext);
+      // console.log("destory");
     });
     innerAudioContext.onError((res: any) => {
-      // ios下如果error的话走这里
       console.log("onError");
       console.log(res);
-      if (this.isPlaying) {
-        if (listener.error) {
-          listener.error();
-        }
-        return;
+      if (listener.error) {
+        listener.error();
       }
-      this.audioContext = uni.getBackgroundAudioManager();
-      this.audioContext.title = "music";
-      this.audioContext.singer = "music";
-      this.audioContext.coverImgUrl =
-        "https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/music-a.png";
-      this.audioContext.src = audioSrc;
-      this.audioContext.autoplay = true;
-      this.audioContext.onEnded(() => {
-        console.log("onEnded");
-        if (listener.success) {
-          listener.success();
-        }
-      });
-      this.audioContext.onStop(() => {
-        console.log("onStop");
-        if (listener.success) {
-          listener.success();
-        }
-      });
-      this.audioContext.onPlay(() => {
-        console.log("play");
-        if (listener.playing) {
-          listener.playing();
-        }
-      });
     });
-    this.audioContext = innerAudioContext;
+    return innerAudioContext;
   }
 }
 
