@@ -283,7 +283,27 @@ class AccountService:
         result = []
         for message in reversed(messages):
             result.append(self.initMessageResult(message))
+
+        # 如果是我的消息，则检查是否进行过语音分析，如果进行过就加载分析结果
+        self.initOwnerMessagePronunciation(result)
         return {"total": total, "list": result}
+    
+    def initOwnerMessagePronunciation(self, result):
+        # 过滤出所有role为USER的id列表，然后根据id列表获取所有的message_pronunciation，再组装到item中，不存在则组装None
+        user_message_ids = [item["id"] for item in result if item["role"] == "USER"]
+        message_pronunciations = (
+            self.db.query(AccountGrammarEntity)
+            .filter(AccountGrammarEntity.message_id.in_(user_message_ids), AccountGrammarEntity.type == "PRONUNCIATION")
+            .all()
+        )
+        for item in result:
+            if item["role"] == "USER":
+                item["pronunciation"] = None
+                for message_pronunciation in message_pronunciations:
+                    if message_pronunciation.message_id == item["id"]:
+                        item["pronunciation"] = json.loads(message_pronunciation.result)
+                        break
+
 
     def initMessageResult(self, message: MessageEntity):
         return {
@@ -333,7 +353,7 @@ class AccountService:
         session = (
             self.db.query(MessageSessionEntity).filter_by(id=message.session_id).first()
         )
-        return azure_voice.speech_pronunciation(
+        return azure_voice.word_speech_pronunciation(
             message.content, file_get_path(dto.file_name), session.language
         )
 
@@ -411,15 +431,12 @@ class AccountService:
     def message_speech(self, message_id: str, account_id: str):
         """文字转语音"""
         # 如果没有，就生成一个
-        logging.info('1')
         message = self.db.query(MessageEntity).filter_by(id=message_id).first()
         # 获取信息对应的message_session信息，获取对应的配置
-        logging.info('2')
         speech_rate_setting = self.get_setting(
             account_id, ACCOUNT_SETTINGS_PLAYING_VOICE_SPEED
         )
 
-        logging.info('3')
         speech_rate = "1.0"
         if speech_rate_setting:
             if speech_rate_setting == "0":
@@ -438,7 +455,6 @@ class AccountService:
             .order_by(FileDetail.create_time.desc())
             .first()
         )
-        logging.info('4')
         if True:
             session = (
                 self.db.query(MessageSessionEntity)
@@ -446,7 +462,6 @@ class AccountService:
                 .first()
             )
             
-            logging.info('5')
             full_file_name = f"{Config.TEMP_SAVE_FILE_PATH}/{filename}"
             # 如果speech_rate为NORMAL并且feel是NEUTRAL，则使用speech直接转换，否则使用speech_by_ssml转换
             # if speech_rate == "1.0":
@@ -474,55 +489,7 @@ class AccountService:
             )
             self.db.add(file_detail)
             message.file_name = filename
-            # self.db.commit()
-            # self.db.flush()
         return {"file": file_detail.file_name}
-        # if not file_detail:
-        #     session = (
-        #         self.db.query(MessageSessionEntity)
-        #         .filter_by(id=message.session_id)
-        #         .first()
-        #     )
-        #     full_file_name = f"{Config.TEMP_SAVE_FILE_PATH}/{filename}"
-        #     file_trunk = speech_stream_by_ssml(
-        #         message.content,
-        #         voice_name=session.speech_role_name,
-        #         speech_rate=speech_rate,
-        #         feel=session.speech_style,
-        #         targetLang=session.language,
-        #     )
-        #     # return file_trunk
-        #     for item in file_trunk:
-        #         print('*****************')
-        #         yield item
-            # 如果speech_rate为NORMAL并且feel是NEUTRAL，则使用speech直接转换，否则使用speech_by_ssml转换
-        #     if speech_rate == "1.0":
-        #         speech(
-        #             message.content, full_file_name, voice_name=session.speech_role_name
-        #         )
-        #     else:
-        #         speech_by_ssml(
-        #             message.content,
-        #             full_file_name,
-        #             voice_name=session.speech_role_name,
-        #             speech_rate=speech_rate,
-        #             feel=session.speech_style,
-        #             targetLang=session.language,
-        #         )
-        #     file_detail = FileDetail(
-        #         id=short_uuid(),
-        #         file_path=filename,
-        #         module="SPEECH_VOICE",
-        #         file_name=filename,
-        #         module_id=dto.message_id,
-        #         file_ext="wav",
-        #         created_by=account_id,
-        #     )
-        #     self.db.add(file_detail)
-        #     message.file_name = filename
-        #     self.db.commit()
-        #     self.db.flush()
-        # return {"file": file_detail.file_name}
 
     def translate_text(self, dto: TranslateTextDTO, account_id: str):
         """翻译"""
@@ -686,7 +653,7 @@ class AccountService:
             language = message_session.language
         else:
             language = "en-US"
-        return azure_voice.speech_pronunciation(
+        return azure_voice.word_speech_pronunciation(
             dto.word, file_get_path(dto.file_name), language=language
         )
 
@@ -1005,7 +972,7 @@ class AccountService:
                 .filter_by(id=message.session_id)
                 .first()
             )
-            pronunciation_result = azure_voice.speech_pronunciation(
+            pronunciation_result = azure_voice.word_speech_pronunciation(
                 message.content, file_full_path, language=session.language
             )
             logging.info("end")

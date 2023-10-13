@@ -201,6 +201,7 @@ const sendSpeech = (fileName: string) => {
  * @param fileName 如果是语音发送, 则传入文件名
  */
 const sendMessage = (message?: string, fileName?: string) => {
+  console.log('send file name');
   const ownertTimestamp = new Date().getTime();
   const ownMessage: any = {
     id: ownertTimestamp,
@@ -268,6 +269,8 @@ const handleSwitchInputType = () => {
 const initData = (sessionId: string) => {
   chatRequest.sessionDetailsGet({ sessionId }).then((res: any) => {
     session.value = res.data;
+    console.log(res.data)
+    console.log(session.value)
     // 如果没有任何历史消息，则请求后台生成第一条消息
     if (session.value.messages.total === 0) {
       chatRequest.sessionInitGreeting(sessionId).then((res: any) => {
@@ -281,6 +284,7 @@ const initData = (sessionId: string) => {
           auto_hint: accountSetting.value.auto_text_shadow,
           auto_play: accountSetting.value.auto_playing_voice,
           auto_pronunciation: false,
+          pronunciation: null
         });
         // AI消息自动播放与模糊
         nextTick(() => {
@@ -301,6 +305,7 @@ const initData = (sessionId: string) => {
         auto_hint: false,
         auto_play: false,
         auto_pronunciation: false,
+        pronunciation: item.pronunciation
       });
     });
     scrollToBottom();

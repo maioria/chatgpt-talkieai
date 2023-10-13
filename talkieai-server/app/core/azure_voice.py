@@ -6,6 +6,7 @@ from app.config import Config
 from app.core.logging import logging
 from pydub import AudioSegment
 import os
+
 key = Config.AZURE_KEY
 region = "eastasia"
 
@@ -14,6 +15,7 @@ speech_config = speechsdk.SpeechConfig(subscription=key, region=region)
 speech_synthesizer = speechsdk.SpeechSynthesizer(
     speech_config=speech_config, audio_config=None
 )
+
 
 def speech_by_ssml(
     content: str,
@@ -36,7 +38,9 @@ def speech_by_ssml(
     </speak>
     """
     logging.info(ssml)
-    speech_synthesis_result = speech_synthesizer.start_speaking_ssml_async(ssml).get() # Get the audio data stream
+    speech_synthesis_result = speech_synthesizer.start_speaking_ssml_async(
+        ssml
+    ).get()  # Get the audio data stream
     audio_data_stream = speechsdk.AudioDataStream(speech_synthesis_result)
 
     if (
@@ -47,22 +51,27 @@ def speech_by_ssml(
         audio_data_stream.save_to_wav_file(output_path_str)
         logging.info("init 2")
     else:
-        logging.error("Speech synthesis failed: {}".format(speech_synthesis_result.reason))
+        logging.error(
+            "Speech synthesis failed: {}".format(speech_synthesis_result.reason)
+        )
         if speech_synthesis_result.reason == speechsdk.ResultReason.Canceled:
             cancellation_details = speech_synthesis_result.cancellation_details
-            logging.error("Speech synthesis canceled: {}".format(cancellation_details.reason))
+            logging.error(
+                "Speech synthesis canceled: {}".format(cancellation_details.reason)
+            )
             if cancellation_details.reason == speechsdk.CancellationReason.Error:
                 if cancellation_details.error_details:
                     logging.error(
                         "Error details: {}".format(cancellation_details.error_details)
                     )
-                    logging.error("Did you set the speech resource key and region values?")
+                    logging.error(
+                        "Did you set the speech resource key and region values?"
+                    )
         raise Exception("语音合成失败")
 
 
-
 def speech_pronunciation(content: str, speech_path: str, language: str = "en-US"):
-    """ 发音评估 """
+    """发音评估"""
     audio_config = speechsdk.audio.AudioConfig(filename=speech_path)
     speech_config.speech_recognition_language = language
     speech_recognizer = speechsdk.SpeechRecognizer(
@@ -105,9 +114,70 @@ def speech_pronunciation(content: str, speech_path: str, language: str = "en-US"
     result["words"] = result_words
     return result
 
+
+# 单词发单评估，可以精确到每一个音素
+def word_speech_pronunciation(word: str, speech_path: str, language: str = "en-US"):
+    audio_config = speechsdk.audio.AudioConfig(filename=speech_path)
+    speech_config.speech_recognition_language = language
+    speech_recognizer = speechsdk.SpeechRecognizer(
+        speech_config=speech_config, audio_config=audio_config
+    )
+    # "{\"referenceText\":\"good morning\",\"gradingSystem\":\"HundredMark\",\"granularity\":\"Phoneme\",\"EnableMiscue\":true}" 通过dict生成json
+    json_param = {
+        "referenceText": word,
+        "gradingSystem": "HundredMark",
+        "granularity": "Phoneme",
+        "EnableMiscue": True,
+        "phonemeAlphabet": "IPA",
+    }
+    pronunciation_assessment_config = speechsdk.PronunciationAssessmentConfig(
+        json_string=json.dumps(json_param)
+    )
+
+    pronunciation_assessment_config.apply_to(speech_recognizer)
+
+    speech_recognition_result = speech_recognizer.recognize_once()
+    pronunciation_assessment_result = speechsdk.PronunciationAssessmentResult(
+        speech_recognition_result
+    )
+    result = {
+        "accuracy_score": pronunciation_assessment_result.accuracy_score,
+        "fluency_score": pronunciation_assessment_result.fluency_score,
+        "completeness_score": pronunciation_assessment_result.completeness_score,
+        "pronunciation_score": pronunciation_assessment_result.pronunciation_score,
+    }
+    original_words = pronunciation_assessment_result.words
+    result_words = []
+    # 循环words，获取每个单词的发音评估结果
+    for word in original_words:
+
+        # 获取音素评估结果
+        phonemes = word.phonemes
+        phonemes_list = []
+        for phoneme in phonemes:
+            phonemes_list.append(
+                {
+                    "phoneme": phoneme.phoneme,
+                    "accuracy_score": phoneme.accuracy_score
+                }
+            )
+
+        result_words.append(
+            {
+                "word": word.word,
+                "accuracy_score": word.accuracy_score,
+                "error_type": word.error_type,
+                "phonemes": phonemes_list,
+            }
+        )
+    result["words"] = result_words
+    return result
+
+
 # 语音转文字
 def speech_translate_text(speech_path: str, language: str) -> str:
-    languages = ["zh-CN", "en-US"]
+    # languages = ["zh-CN", "en-US"]
+    languages = []
     # 如果languages已经包含了language，就不需要再添加了,不包含需要添加，并且放在第一位
     if language not in languages:
         languages.insert(0, language)
@@ -115,19 +185,15 @@ def speech_translate_text(speech_path: str, language: str) -> str:
         speechsdk.languageconfig.AutoDetectSourceLanguageConfig(languages=languages)
     )
     audio_config = speechsdk.audio.AudioConfig(filename=speech_path)
-    
-    logging.info('1-1')
+
     speech_recognizer = speechsdk.SpeechRecognizer(
         speech_config=speech_config,
         auto_detect_source_language_config=auto_detect_source_language_config,
         audio_config=audio_config,
     )
-    logging.info('1-2')
     speech_recognition_result = speech_recognizer.recognize_once_async().get()
-    logging.info('1-3')
     if speech_recognition_result.reason == speechsdk.ResultReason.RecognizedSpeech:
         print("Recognized: {}".format(speech_recognition_result.text))
-        logging.info('1-4')
         return speech_recognition_result.text
     elif speech_recognition_result.reason == speechsdk.ResultReason.NoMatch:
         print(

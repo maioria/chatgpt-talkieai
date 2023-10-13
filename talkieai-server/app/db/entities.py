@@ -272,7 +272,7 @@ class SysDictDataEntity(Base):
     dict_value = Column("dict_value", String(80), nullable=False)
     status = Column("status", String(80), nullable=False, default= "1")
     create_time = Column("create_time", DateTime, default=datetime.datetime.now)
-    update_time = Column("update_time", DateTime, default=datetime.datetime.now)
+    update_time = Column("update_time", DateTime, default=datetime.datetime.now)    
 
 # 数据库未创建表的话自动创建表
 Base.metadata.create_all(engine)

@@ -9,11 +9,11 @@
 			<!-- profile -->
 			<view class="profile-box">
 				<view v-if="accountInfo.account_id.indexOf('visitor') === 0" class="profile" @tap="hangleLogin">
-					<image class="profile-avatar" src="/static/default-avatar.png" />
+					<image class="profile-avatar" src="/static/default-account-avatar.png" />
 					<text class="profile-name">请登录</text>
 				</view>
 				<view v-else class="profile">
-					<image class="profile-avatar" src="/static/default-avatar.png" />
+					<image class="profile-avatar" src="/static/default-account-avatar.png" />
 					<text class="profile-name">{{ accountInfo.account_id }}</text>
 				</view>
 			</view>
@@ -47,9 +47,9 @@
 					<text class="setting-card-title">Github</text>
 				</view>
 				<!-- 如果是小程序登录 -->
-				<view v-if="accountInfo.account_id.indexOf('visitor') < 0" class="setting-card" @tap="hangleLogout">
-					<image class="setting-card-logo" src="/static/feedback.png" />
-					<text class="setting-card-title">退出登录</text>
+				<view v-if="accountInfo.account_id.indexOf('visitor') < 0" class="logout-box" @tap="hangleLogout">
+					<!-- <image class="setting-card-logo" src="/static/default-account-avatar.png" /> -->
+					<text class="setting-card-title logout-text">退出登录</text>
 				</view>
 			</view>
 		</view>

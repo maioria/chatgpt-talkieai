@@ -4,18 +4,20 @@
       <LoadingRound v-if="transformFileLoading"></LoadingRound>
       <template v-else>
         <image
-            v-if="speechLoading"
-            class="icon message-playing-icon play-ico"
-            :class="{ reverse: direction && direction == 'right' }"
-            src="/static/voice_playing.gif"
-            mode="heightFix"
+          v-if="speechLoading"
+          class="icon message-playing-icon play-ico"
+          style="width: 36rpx;height:36rpx;"
+          :class="{ reverse: direction && direction == 'right' }"
+          src="/static/voice_playing.gif"
+          mode="heightFix"
         ></image>
         <image
-            v-else
-            class="icon message-playing-icon playing-ico"
-            :class="{ reverse: direction && direction == 'right' }"
-            src="/static/voice_play.png"
-            mode="heightFix"
+          v-else
+          class="icon message-playing-icon playing-ico"
+          style="width: 36rpx;height:36rpx;"
+          :class="{ reverse: direction && direction == 'right' }"
+          src="/static/voice_play.png"
+          mode="heightFix"
         ></image>
       </template>
     </view>
@@ -123,8 +125,8 @@ const handleSpeech = async () => {
         audioUrl: audioUrl,
         listener: {
           playing: () => {
-            transformFileLoading.value = false;
-            speechLoading.value = true;
+          transformFileLoading.value = false;
+          speechLoading.value = true;
           },
           success: () => {
             speechLoading.value = false;
@@ -157,18 +159,14 @@ defineExpose({
 
 <style lang="less" scoped>
 .speech-container {
-  width: 22rpx;
-  height: 28rpx;
   display: flex;
   align-items: center;
   .playing-ico {
-    width: 22rpx;
-    height: 28rpx;
     display: flex;
     align-items: center;
     .icon {
-      width: 22rpx;
-      height: 28rpx;
+      width: 32rpx;
+      height: 32rpx;
 
       &.reverse {
         transform: rotateY(180deg);

@@ -176,7 +176,7 @@ class SystemBaseAI(ChatAI):
     def invoke_grammar_analysis(self, params: GrammarAnalysisParams) -> Dict:
         logging.info(f"request_params:{params.dict()}")
         messages = [
-            {"role": "user", "content": f'请提供一段内容，只需要简洁快速的用中文返回这段内容中的语法错误，再根据提供的语言提供一句推荐示例，要求数据格式为json，无任何转义字符，可直接被程序正常序列化，语法是否错误放在属性isCorrect中，错误原因放在errorReason中，修正后的正确示例放在correctContent中，推荐示例放在better中，正确示例与推荐示例的语言要使用{params.language},提供内容是:{params.content}'}
+            {"role": "user", "content": f'检查内容是否存在语法错误(不需要检查符号的使用)，如果存在就用中文返回这段内容中的语法错误，再提供一句推荐示例，要求数据格式为json，无任何转义字符，可直接被程序正常序列化，语法是否错误放在属性isCorrect中，错误原因放在errorReason中，修正后的正确示例放在correctContent中，推荐示例放在better中，正确示例与推荐示例的语言要使用{params.language},错误原因使用中文. 提供内容是:{params.content}'}
         ]
         invoke_dto = MessageInvokeDTO(messages=messages)
         return self._original_invoke_chat(invoke_dto)

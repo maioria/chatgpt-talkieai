@@ -4,15 +4,12 @@
     <view class="pronunciation-content">
       <loading-round v-if="pronunciationLoading" />
       <view v-if="pronunciationResult">
-        <Rate :rate="pronunciationResult.pronunciation_score" />
+        <Rate :rate="utils.removeDecimal(pronunciationResult.pronunciation_score)" />
       </view>
       <view v-if="pronunciationResult" class="pronunciation-tips"> 点击查看单词评分 </view>
-      <view v-if="pronunciationResult" class="word-box">
-        <view class="word-text" v-for="word in pronunciationResult.words" :key="word.word" @tap="handleWordDetail(word)"
-          :class="{ incorrect: word.accuracy_score <= 60 }">
-          {{ word.word }}
-        </view>
-      </view>
+
+      <TextPronunciation v-if="pronunciationResult" :content="messageContent" :pronunciation="pronunciationResult" @wordClick="handleWordDetail" />
+
       <view class="voice-box">
         <view class="ai-voice-box">
           <image class="voice-avatar" :src="globalUserInfo.teacher_avatar || '/static/home.png'"></image>
@@ -37,8 +34,11 @@ import AudioPlayer from "@/components/AudioPlayer.vue";
 import LoadingRound from "@/components/LoadingRound.vue";
 import Speech from "@/components/Speech.vue";
 import Rate from "@/components/Rate.vue";
+import TextPronunciation from "./TextPronunciation.vue";
 import chatRequest from "@/api/chat";
 import { useUserInfo } from "@/global/globalCount.hooks";
+import utils from '@/utils/utils';
+import type { Word } from '@/models/models';
 
 const props = defineProps<{
   messageId: string;
@@ -80,12 +80,8 @@ const handleSuccess = (data: any) => {
       console.log(pronunciationLoading.value)
     });
 };
-
-const handleWordDetail = (word: string) => {
-  console.log(word)
-  emit("wordClick", {
-    word: word,
-  });
+const handleWordDetail = (word: Word) => {
+  emit("wordClick", word);
 };
 defineExpose({
   initData,
@@ -99,26 +95,6 @@ defineExpose({
     border-radius: 30rpx;
     margin-top: -20rpx;
     padding: 8rpx 0 8rpx 32rpx;
-  }
-
-  .word-box {
-    margin-top: 42rpx;
-    display: flex;
-    font-size: 28rpx;
-    flex-wrap: wrap;
-
-    .word-text {
-      margin-left: 12rpx;
-      color: #11a581;
-
-      &:first-child {
-        margin-left: 0;
-      }
-
-      &.incorrect {
-        color: #fc6262;
-      }
-    }
   }
 
   .voice-box {

@@ -29,6 +29,27 @@ export interface Message {
   auto_play?: boolean | null;
   auto_hint?: boolean | null;
   auto_pronunciation?: boolean | null;
+  pronunciation?: Pronunciation | null | undefined;
+}
+
+export interface Phoneme {
+  phoneme: string;
+  accuracy_score: number;
+}
+
+export interface Word {
+  word: string;
+  accuracy_score: number;
+  error_type: string;
+  phonemes: Phoneme[];
+}
+
+export interface Pronunciation {
+  accuracy_score: number;
+  fluency_score: number;
+  completeness_score: number;
+  pronunciation_score: number;
+  words: Word[];
 }
 
 export interface MessagePage {

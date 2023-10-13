@@ -1,28 +1,38 @@
 <template>
     <view class="word-detail-container">
-        <LoadingRound v-if="wordDetailLoading"></LoadingRound>
-
-        <!-- 单词内容 -->
-        <view v-if="wordDetail">
+        <view>
+            <!-- 发单 -->
             <LoadingRound v-if="practiceLoading"></LoadingRound>
-            <Rate v-if="wordDetailAccuracyScore" :rate="wordDetailAccuracyScore" />
-            <view class="original-word-box">
-                <view class="left-box">
-                    <view class="original-word-text">{{ wordDetail.original }}</view>
-                    <audio-player class="audio-player-box" :content="wordDetail.original" :session-id="sessionId"></audio-player>
+            <template v-else-if="wordPronunciation">
+                <Rate :rate="wordPronunciation.accuracy_score" />
+                <view class="phoneme-box">
+                    <PhonemeBox :word="wordPronunciation" @phonemeClick="handlePhonemeClick" />
+                    <audio-player v-if="practiceFile" class="audio-player-box" :file-name="practiceFile"></audio-player>
                 </view>
-                <view class="right-box">
-                    <Collect type="WORD" :content="wordDetail.original"></Collect>
+            </template>
+
+            <!-- 单词内容 -->
+            <LoadingRound v-if="wordDetailLoading"></LoadingRound>
+            <template v-else-if="wordDetail">
+                <view class="original-word-box">
+                    <view class="left-box">
+                        <view class="original-word-text">{{ wordDetail.original }}</view>
+                        <audio-player class="audio-player-box" :content="wordDetail.original"
+                            :session-id="sessionId"></audio-player>
+                    </view>
+                    <view class="right-box">
+                        <Collect type="WORD" :content="wordDetail.original"></Collect>
+                    </view>
                 </view>
-            </view>
-            <view class="phonetic-box">
-                <view class="phonetic-text">
-                    {{ wordDetail.phonetic }}
+                <view class="phonetic-box">
+                    <view class="phonetic-text">
+                        {{ wordDetail.phonetic }}
+                    </view>
                 </view>
-            </view>
-            <view class="translation-box">
-                {{ wordDetail.translation }}
-            </view>
+                <view class="translation-box">
+                    {{ wordDetail.translation }}
+                </view>
+            </template>
         </view>
 
         <!-- 练习 -->
@@ -33,23 +43,26 @@
     </view>
 </template>
 <script setup lang="ts">
-import { ref, defineEmits } from 'vue';
+import { ref } from 'vue';
 import chatRequest from '@/api/chat';
 import AudioPlayer from '@/components/AudioPlayer.vue';
 import LoadingRound from "@/components/LoadingRound.vue";
 import Speech from '@/components/Speech.vue';
 import Collect from '@/components/Collect.vue';
 import Rate from '@/components/Rate.vue';
+import PhonemeBox from './PhonemeBox.vue';
+import type { Word, Phoneme } from '@/models/models';
 
 const wordDetailLoading = ref(false);
 const practiceLoading = ref(false);
 const wordDetailAccuracyScore = ref(null);
+const wordPronunciation = ref<Word>();
 const wordDetail = ref(null);
 const sessionId = ref('');
-const emit = defineEmits();
+const practiceFile = ref(null);
 
-const initData = (word: any, sessionIdVal: string) => {
-    wordDetailAccuracyScore.value = word.accuracy_score;
+const initData = (word: Word, sessionIdVal: string) => {
+    wordPronunciation.value = word;
     wordDetail.value = null;
     sessionId.value = sessionIdVal;
     wordDetailLoading.value = true;
@@ -65,16 +78,22 @@ const handleSuccess = (data: any) => {
         return;
     }
     wordDetailAccuracyScore.value = null;
-    wordDetailLoading.value = true;
+    practiceLoading.value = true;
+    practiceFile.value = null;
     chatRequest.wordPractice({
         word: wordDetail.value.original,
         session_id: sessionId.value,
         file_name: data.fileName
-    }).then((data) => {
-        const wordDetailData = data.data;
-        wordDetailAccuracyScore.value = wordDetailData.accuracy_score;
-        wordDetailLoading.value = false;
+    }).then((res) => {
+        const wordDetailData = res.data;
+        wordPronunciation.value = wordDetailData['words'][0];
+        practiceLoading.value = false;
+        practiceFile.value = data.fileName;
     });
+}
+
+const handlePhonemeClick = (phoneme: Phoneme) => {
+    console.log(phoneme)
 }
 defineExpose({
     initData
@@ -131,6 +150,17 @@ defineExpose({
         justify-content: center;
         margin-top: 50rpx;
         margin-bottom: 16rpx;
+    }
+
+    .phoneme-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 36rpx;
+
+        .audio-player-box {
+            margin-left: 12rpx;
+        }
     }
 }
 </style>

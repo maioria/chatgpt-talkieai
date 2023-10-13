@@ -24,14 +24,9 @@ const containerStyle = computed(
 </script>
 <style lang="less" scoped>
 .loading-round {
-  // height: 24px;
-  // width: 24px;
-  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
 
   .loading-round-img {
     width: 16px;

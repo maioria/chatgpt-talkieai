@@ -36,6 +36,7 @@ import { ref, reactive, nextTick, onMounted } from 'vue';
 import MessageGrammar from './MessageGrammar.vue';
 import MessagePronunciation from './MessagePronunciation.vue';
 import WordDetail from './WordDetail.vue';
+import type { Word } from '@/models/models';
 
 
 const grammarPopup = ref(null);
@@ -65,7 +66,7 @@ const handleCloseWordDetail = () => {
     initData();
 };
 
-const handleWordDetail = (word: any) => {
+const handleWordDetail = (word: Word) => {
     wordDetailShow.value = true;
 
     nextTick(() => {
@@ -106,22 +107,31 @@ const handleClose = () => {
 };
 
 
-const open = (id: string, content: string, file: string, sessionIdVal: string) => {
+const open = (id: string, content: string, file: string, sessionIdVal: string, type: string|undefined) => {
     messageId.value = id;
     sessionId.value = sessionIdVal
     messageContent.value = content;
     fileName.value = file;
+    if (type && type==='pronunciation') {
+        activeView.value = 'pronunciation';
+    } else {
+        activeView.value = 'grammar';
+    }
     grammarPopup.value.open();
 
     nextTick(() => {
         setTimeout(() => {
-            messageGrammarRef.value.initData();
+            if (activeView.value === 'pronunciation') {
+                messagePronunciationRef.value.initData();
+            } else {
+                messageGrammarRef.value.initData();
+            }
         }, 100);
     });
 };
 
-const handleWordClick = (data: any) => {
-    handleWordDetail(data.word);
+const handleWordClick = (word: Word) => {
+    handleWordDetail(word);
 };
 
 defineExpose({

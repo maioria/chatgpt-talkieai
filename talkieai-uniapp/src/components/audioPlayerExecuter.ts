@@ -15,9 +15,9 @@ class AudioPlayer {
    * 录音的时候使用，录音前要先关闭所有音频播放
    */
   stopAudio() {
-    if (this.audioContext) {
-      this.audioContext.stop();
-    }
+	  if (this.audioContext) {
+		  this.audioContext.stop();
+	  }
   }
 
   playAudio({ audioUrl, listener }: { audioUrl: string; listener: Listener }) {

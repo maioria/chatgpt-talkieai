@@ -189,6 +189,7 @@ def pronunciation_api(
     account_service = AccountService(db)
     return ApiResponse(data=account_service.pronunciation(dto, account_id))
 
+# 进行音素级别的发音评估
 
 # 获取单词的音标与翻译
 @router.post("/word/detail")

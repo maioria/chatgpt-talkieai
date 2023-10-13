@@ -11,6 +11,7 @@ from app.core.logging import logging
 class ZhipuInvokeDTO(BaseModel):
     prompt: List[Dict]
     model = "chatglm_pro"
+    temperature=0.1
 
 
 class ZhipuAI(MessageBaseAI):
