@@ -2,8 +2,7 @@
 
 ## 简介
 [TalkieAI](https://github.com/maioria/chatgpt-talkieai) 是一个基于AI的外语学习应用，可通过语音进行聊天，语法分析，翻译。
-AI可以基于CHAT-GPT, [百度开放平台](https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application)，[智谱开放平台](https://open.bigmodel.cn/)
-百度模型还未完全适配好，暂时可以用智谱开放平台
+AI可以基于CHAT-GPT, [智谱开放平台](https://open.bigmodel.cn/)
 ## 在线预览
 
 - [TalkieAI 预览地址](https://talkie.prejade.com/)
