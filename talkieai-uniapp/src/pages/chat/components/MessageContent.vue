@@ -10,7 +10,8 @@
         <!-- AI消息 -->
         <view v-if="!message.owner" class="assistant-text-box">
           <FunctionalText ref="functionalTextRef" :auto-play="message.auto_play || false" :messageId="message.id"
-            :wordClickable="true" :text="message.content" :translateShow="translateShow" :textShadow="textShadow" />
+            :wordClickable="true" :text="message.content" :fileName="message.file_name" :translateShow="translateShow"
+            :textShadow="textShadow" />
           <view class="divider"></view>
           <view class="action-container">
             <view class="btn-box" :class="{ active: translateShow }">
@@ -49,11 +50,11 @@
       <!-- 语法 -->
       <view v-if="message.owner" class="grammar-outter-box">
         <LoadingRound v-if="grammarLoading" class="grammar-box" />
-        <view v-else-if="message.pronunciation" class="grammar-box"  @tap="handleGrammar">
+        <view v-else-if="message.pronunciation" class="grammar-box" @tap="handleGrammar">
           <image class="grammar-icon" src="/static/icon_grammar.png" />
           <text class="grammar-score">{{ utils.removeDecimal(message.pronunciation.pronunciation_score) }}</text>
         </view>
-        <view v-else class="grammar-box"  @tap="handleGrammar">
+        <view v-else class="grammar-box" @tap="handleGrammar">
           <image class="grammar-icon" src="/static/icon_grammar.png" />
           <text>语法</text>
         </view>
@@ -67,7 +68,6 @@ import { ref, computed, nextTick, onMounted } from "vue";
 import FunctionalText from "@/components/FunctionalText.vue";
 import AudioPlayer from "@/components/AudioPlayer.vue";
 import MessageGrammar from "./MessageGrammarPopup.vue";
-import TextPronunciation from "./TextPronunciation.vue";
 import Collect from "@/components/Collect.vue";
 import type { Message, MessagePage, Session } from "@/models/models";
 import Loading from "@/components/Loading.vue";
@@ -122,7 +122,11 @@ const handleHint = () => {
   textShadow.value = !textShadow.value;
 };
 
-const handleGrammar = (type:string|undefined) => {
+const handleGrammar = () => {
+  let type = "grammar";
+  if (props.message.file_name) {
+    type = "pronunciation";
+  }
   messageGrammarRef.value.open(
     props.message.id,
     props.message.content,
@@ -130,10 +134,6 @@ const handleGrammar = (type:string|undefined) => {
     props.message.session_id,
     type
   );
-};
-
-const handleWordDetail = (word: string) => {
-  handleGrammar('pronunciation')
 };
 
 /**
@@ -257,7 +257,6 @@ defineExpose({
     .action-container {
       display: flex;
 
-      // gap: 28rpx;
       .btn-box {
         margin-left: 16rpx;
         height: 48rpx;
@@ -265,12 +264,6 @@ defineExpose({
         display: flex;
         justify-content: center;
         align-items: center;
-        // padding: 8rpx;
-
-        // &.collect-btn-box {
-        //   width: 32rpx;
-        //   height: 30rpx;
-        // }
 
         &.active {
           background-color: #fff;

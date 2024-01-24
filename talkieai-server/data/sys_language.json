@@ -1,0 +1,11 @@
+[
+  { "label": "英语（美国）", "value": "en-US", "default_voice_role_name":"en-US-JennyNeural" },
+  { "label": "英语（英国）", "value": "en-GB", "default_voice_role_name":"en-GB-SoniaNeural" },
+  { "label": "中文（普通话）", "value": "zh-CN", "default_voice_role_name":"zh-CN-XiaoxiaoNeural" },
+  { "label": "中文（粤语）", "value": "zh-HK", "default_voice_role_name":"" },
+  { "label": "德语", "value": "de-DE", "default_voice_role_name":"zh-HK-HiuMaanNeural" },
+  { "label": "日语", "value": "ja-JPR", "default_voice_role_name":"ja-JP-NanamiNeural" },
+  { "label": "韩语", "value": "ko-KR", "default_voice_role_name":"ko-KR-SunHiNeural" },
+  { "label": "俄语", "value": "ru-RU", "default_voice_role_name":"ru-RU-SvetlanaNeural" },
+  { "label": "法语", "value": "fr-FR", "default_voice_role_name":"fr-FR-DeniseNeural" }
+]

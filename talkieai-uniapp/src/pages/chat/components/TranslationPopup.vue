@@ -20,14 +20,14 @@
           <LoadingRound />
         </view>
         <!-- 翻译后的文本 -->
-        <view v-if="translationText" class="translation-box">
+        <view v-if="translationText && !translating" class="translation-box">
           <text class="translation-text">
             {{ translationText }}
           </text>
           <AudioPlayer class="playing-box" :content="translationText" :session-id="sessionId" />
         </view>
         <!-- 直接发送 -->
-        <view v-if="translationText" class="send-box">
+        <view v-if="translationText && !translating" class="send-box">
           <view class="send-btn-box">
             <view @tap="handleSend" class="send-btn"> 发送文本 </view>
           </view>
@@ -67,7 +67,6 @@ const inputHasText = computed(() => {
 });
 
 const handleTranslate = () => {
-  console.log("handleTransalte");
   if (!inputHasText.value) {
     uni.showToast({
       title: "请输入文本",
@@ -77,10 +76,9 @@ const handleTranslate = () => {
   }
   translating.value = true;
   chatService
-    .translateText({
+    .translateSettingLanguage({
       text: inputText.value,
-      session_id: sessionId.value,
-      target_language: "English",
+      session_id: sessionId.value
     })
     .then((data) => {
       translationText.value = data.data;

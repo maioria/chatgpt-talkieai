@@ -64,7 +64,7 @@ class Speech {
   mpWeixinVoiceStart() {
     let self = this;
     let recorderManager = uni.getRecorderManager();
-	console.log(recorderManager)
+    console.log(recorderManager);
     // 如果是andoird手机使用，则须要设置mp3格式，否则无法播放
     let format = "wav";
 
@@ -81,7 +81,7 @@ class Speech {
       encodeBitRate: 192000,
       format: format,
     });
-	console.log('speech start..')
+    console.log("speech start..");
     self.recorder.start = true;
     self.recorder.remainingTime = MAXIMUM_RECORDING_TIME;
     self.intervalId = setInterval(() => {
@@ -96,7 +96,7 @@ class Speech {
     }, 1000);
 
     recorderManager.onStop((res: any) => {
-		console.log('speech on stop..' + res.tempFilePath);
+      console.log("speech on stop.." + res.tempFilePath);
       self.handleProcessWxEndVoice({
         filePath: res.tempFilePath,
       });
@@ -183,7 +183,7 @@ class Speech {
     }
 
     // #ifndef H5
-	console.log('speech trigger end..')
+    console.log("speech trigger end..");
     self.handleWxEndVoice();
     // #endif
 
@@ -194,14 +194,14 @@ class Speech {
 
   handleWxEndVoice() {
     let self = this;
-	console.log('execute stop1')
-	console.log(self.recorder)
+    console.log("execute stop1");
+    console.log(self.recorder);
     self.recorder.wxRecorderManager.stop();
-	console.log('execute stop')
+    console.log("execute stop");
   }
 
   handleProcessWxEndVoice({ filePath }: { filePath: string }) {
-	  console.log('speech end...')
+    console.log("speech end...");
     let self = this;
     if (self.listener.processing) {
       self.listener.processing();
@@ -214,13 +214,13 @@ class Speech {
         "X-Token": uni.getStorageSync("x-token"),
       },
       name: "file",
-      success: (res:any) => {
+      success: (res: any) => {
         var resData = res;
         self.handleUploadResult({
           resData,
         });
       },
-      fail(e:any) {
+      fail(e: any) {
         console.error(e, "失败原因");
         uni.showToast({
           title: "上传失败",
@@ -245,7 +245,7 @@ class Speech {
     }
 
     self.recorder.rec.stop(
-      (blob:any, duration:any) => {
+      (blob: any, duration: any) => {
         self.recorder.processing = true;
         var reader = new FileReader();
         reader.addEventListener("load", function () {}, false);
@@ -261,8 +261,7 @@ class Speech {
           formData: {
             file: blob,
           },
-          url:
-            __config.basePath + "/voice/upload",
+          url: __config.basePath + "/voices/upload",
           success: (res) => {
             var resData = res;
             self.handleUploadResult({
@@ -283,7 +282,7 @@ class Speech {
           },
         });
       },
-      function (s:any) {
+      function (s: any) {
         if (self.listener.error) {
           self.listener.error(s);
         }

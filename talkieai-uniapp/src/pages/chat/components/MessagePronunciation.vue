@@ -12,7 +12,7 @@
 
       <view class="voice-box">
         <view class="ai-voice-box">
-          <image class="voice-avatar" :src="globalUserInfo.teacher_avatar || '/static/home.png'"></image>
+          <image class="voice-avatar" :src="globalUserInfo.teacher_avatar || '/static/ai-robot.jpg'"></image>
           <audio-player :content="messageContent" :sessionId="sessionId"></audio-player>
         </view>
 
@@ -72,9 +72,9 @@ const handleSuccess = (data: any) => {
   pronunciationResult.value = null;
   chatRequest
     .messagePractice({ message_id: props.messageId, file_name: data.fileName })
-    .then((data) => {
+    .then((resp) => {
       practiceFileName.value = data.fileName;
-      pronunciationResult.value = data.data;
+      pronunciationResult.value = resp.data;
     }).finally(() => {
       pronunciationLoading.value = false;
       console.log(pronunciationLoading.value)

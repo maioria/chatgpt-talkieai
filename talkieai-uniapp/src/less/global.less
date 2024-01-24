@@ -8,6 +8,7 @@ view {
 }
 
 @common-color:#6236FF;
+@common-bg-gray-color: #F5F5FE;
 
 .common-button{
 	width: 590rpx;
@@ -42,4 +43,47 @@ view{
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+}
+
+.common-button{
+	width: 590rpx;
+	height: 120rpx;
+	background: @common-color;
+	color:#fff;
+	font-size: 14px;
+	border-radius: 60rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	
+}
+
+.atk-btn-box {
+	padding: 28rpx 0;
+	background: @common-color;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 18px;
+	border-radius: 60rpx;
+	color:#fff;
+	.atk-btn {
+		letter-spacing: 4rpx;
+	}
+
+	&.gray {
+		background: #999;
+	}
+}
+.bottom-box {
+    margin: 32rpx;
+    width: calc(100vw - 64rpx);
+    position: fixed;
+    bottom: 0;
+    padding-bottom: calc(env(safe-area-inset-bottom) / 2);
+}
+
+.icon {
+	width: 32rpx;
+	height: 32rpx;
 }

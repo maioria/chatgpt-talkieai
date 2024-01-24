@@ -25,8 +25,8 @@
           <image class="voice-icon" src="/static/icon_voice_fixed.png"></image>
         </view>
         <view class="input-box">
-          <input class="textarea" @focus="inputFocus" confirm-type="send" @confirm="handleSendText" style="padding-left: 30rpx"
-            v-model="inputText" @input="handleInput" placeholder="在这里输入文字" />
+          <input class="textarea" @focus="inputFocus" confirm-type="send" @confirm="handleSendText"
+            style="padding-left: 30rpx" v-model="inputText" @input="handleInput" placeholder="在这里输入文字" />
         </view>
         <view @tap="handleSendText" class="send-icon-box" :class="{ active: inputHasText }">
           <image class="send-icon" src="/static/icon_send.png"> </image>
@@ -62,11 +62,12 @@ import { ref, computed, nextTick, onMounted, onBeforeUnmount, getCurrentInstance
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import chatRequest from "@/api/chat";
 import accountRequest from "@/api/account";
+import topicRequest from "@/api/topic";
 import type { Message, MessagePage, Session, AccountSettings } from "@/models/models";
 
 const session = ref<Session>({
   id: undefined,
-  speech_role_name: "",
+  type: undefined,
   messages: { total: 0, list: [] } as MessagePage,
 });
 const messages = ref<Message[]>([]);
@@ -75,27 +76,20 @@ const inputText = ref("");
 const menuSwitchDown = ref(true);
 const inputBottom = ref(0)
 
-const recorder = ref({
-  start: false,
-  processing: false,
-  completed: false,
-  voiceFileName: null,
-  translating: false,
-  translateText: null,
-  playingVoice: false,
-});
 const messageListRef = ref([]);
 const accountSetting = ref<AccountSettings>({
-  auto_playing_voice: false,
-  auto_text_shadow: false,
-  auto_pronunciation: false,
-  playing_voice_speed: '1.0'
+  auto_playing_voice: 0,
+  auto_text_shadow: 0,
+  auto_pronunciation: 0,
+  playing_voice_speed: '1.0',
+  speech_role_name_label: '',
+  speech_role_name: '',
+  target_language: '',
 })
 
 const $bus: any = getCurrentInstance()?.appContext.config.globalProperties.$bus;
 
 const inputFocus = (e: any) => {
-  console.log(e.detail.height);
   inputBottom.value = e.detail.height;
 }
 
@@ -114,13 +108,14 @@ const sendMessageHandler = (info: any) => {
 
 onLoad((option: any) => {
   initData(option.sessionId);
-});
-
-onMounted(() => {
-  $bus.on("SendMessage", sendMessageHandler);
   uni.setNavigationBarTitle({
     title: 'TalkieAI'
   });
+  console.log('Onload')
+  $bus.on("SendMessage", sendMessageHandler);
+});
+
+onMounted(() => {
 });
 
 onBeforeUnmount(() => {
@@ -129,7 +124,7 @@ onBeforeUnmount(() => {
 
 onShow(() => {
   // 获取用户配置
-  accountRequest.settingsGet().then((data) => {
+  accountRequest.getSettings().then((data) => {
     accountSetting.value = data.data;
   });
 });
@@ -161,7 +156,7 @@ const handleSendText = () => {
  */
 const handleSwitchMenu = () => {
   uni.navigateTo({
-    url: `/pages/setting/index`,
+    url: `/pages/chat/settings?sessionId=${session.value.id}`,
   });
   // menuSwitchDown.value = !menuSwitchDown.value;
 };
@@ -184,15 +179,15 @@ const sendSpeech = (fileName: string) => {
 
   scrollToBottom();
 
-  chatRequest.transformText({file_name:fileName, sessionId:session.value.id})
-      .then(data=>{
-        messages.value = messages.value.filter(
-            (item) => (item.id as any) !== ownertTimestamp
-        );
-          let text = data.data;
-          console.log(text);
-          sendMessage(text, fileName)
-      });
+  chatRequest.transformText({ file_name: fileName, sessionId: session.value.id })
+    .then(data => {
+      messages.value = messages.value.filter(
+        (item) => (item.id as any) !== ownertTimestamp
+      );
+      let text = data.data;
+      console.log(text);
+      sendMessage(text, fileName)
+    });
 }
 
 /**
@@ -212,19 +207,20 @@ const sendMessage = (message?: string, fileName?: string) => {
     role: "USER",
     auto_hint: false,
     auto_play: false,
-    auto_pronunciation: accountSetting.value.auto_pronunciation,
+    auto_pronunciation: false,
   };
   messages.value.push(ownMessage);
-  const timestamp = new Date().getTime();
+  // 防止跟前面的timestamp一样
+  const timestamp = new Date().getTime() + 1;
   const aiMessage: any = {
     id: timestamp,
     session_id: session.value.id,
     content: null,
     owner: false,
-    file_name: fileName,
+    file_name: null,
     role: "ASSISTANT",
-    auto_hint: accountSetting.value.auto_text_shadow,
-    auto_play: accountSetting.value.auto_playing_voice,
+    auto_hint: false,
+    auto_play: false,
     auto_pronunciation: false,
   };
   messages.value.push(aiMessage);
@@ -237,22 +233,37 @@ const sendMessage = (message?: string, fileName?: string) => {
     })
     .then((data) => {
       data = data.data;
-      ownMessage.id = data.send_message_id;
       messages.value = messages.value.filter(
-        (item) => (item.id as any) !== timestamp
+        (item) => (item.id as any) !== timestamp && (item.id as any) !== ownertTimestamp
       );
+
+      ownMessage.id = data.send_message_id;
+      ownMessage.auto_pronunciation = true;
+      messages.value.push({
+        ...ownMessage,
+      });
+
       messages.value.push({
         ...aiMessage,
         id: data.id,
         content: data.data,
+        auto_hint: accountSetting.value.auto_text_shadow == 1,
+        auto_play: accountSetting.value.auto_playing_voice == 1,
       });
+
       // AI消息自动播放与模糊
       nextTick(() => {
         scrollToBottom();
       });
     })
     .catch((e) => {
+      // 为用户提示错误show toast
+      uni.showToast({
+        title: '发送失败..',
+        icon: "none",
+      });
       console.error(e);
+      messages.value.pop();
       messages.value.pop();
     });
 };
@@ -269,11 +280,23 @@ const handleSwitchInputType = () => {
 const initData = (sessionId: string) => {
   chatRequest.sessionDetailsGet({ sessionId }).then((res: any) => {
     session.value = res.data;
-    console.log(res.data)
-    console.log(session.value)
     // 如果没有任何历史消息，则请求后台生成第一条消息
     if (session.value.messages.total === 0) {
+      const timestamp = new Date().getTime();
+      const aiMessage: any = {
+        id: timestamp,
+        session_id: session.value.id,
+        content: null,
+        owner: false,
+        file_name: null,
+        role: "ASSISTANT",
+        auto_hint: false,
+        auto_play: false,
+        auto_pronunciation: false,
+      };
+      messages.value.push(aiMessage);
       chatRequest.sessionInitGreeting(sessionId).then((res: any) => {
+        messages.value.pop();
         session.value.messages.list.push(res.data)
         messages.value.push({
           id: res.data.id,
@@ -281,8 +304,8 @@ const initData = (sessionId: string) => {
           content: res.data.content,
           role: res.data.role,
           owner: res.data.role === "USER",
-          auto_hint: accountSetting.value.auto_text_shadow,
-          auto_play: accountSetting.value.auto_playing_voice,
+          auto_hint: accountSetting.value.auto_text_shadow == 1,
+          auto_play: accountSetting.value.auto_playing_voice == 1,
           auto_pronunciation: false,
           pronunciation: null
         });
@@ -316,10 +339,32 @@ const initData = (sessionId: string) => {
  * 回到主页面
  */
 const handleBackPage = () => {
-  uni.switchTab({
-    url: "/pages/index/index",
-  });
+  // 如果是话题的话，提示用户是否结束些次话题
+  if (session.value.type === 'TOPIC') {
+    uni.showModal({
+      title: '是否结束话题',
+      content: '是否结束并且评分话题',
+      success: (res) => {
+        if (res.confirm) {
+          completeTopic();
+        } else if (res.cancel) {
+          uni.navigateBack();
+        }
+      },
+    });
+  } else {
+    uni.navigateBack();
+  }
 };
+
+const completeTopic = () => {
+  topicRequest.completeTopic({ session_id: session.value.id })
+    .then((res) => {
+      uni.navigateTo({
+        url: `/pages/topic/completion?sessionId=${session.value.id}&redirectType=index`
+      });
+    });
+}
 
 /**
  * 滚动到最底部

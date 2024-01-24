@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import CommonHeader from "@/components/CommonHeader.vue";
 import { ref, reactive, onMounted } from "vue";
-import feedBackRequest from '@/api/feedback';
+import sysRequest from '@/api/sys';
 
 const pushStatus = ref(false);
 const content = ref('');
@@ -59,7 +59,7 @@ const handleAddFeedback = () => {
 		});
 		return;
 	}
-	feedBackRequest.feedbackAdd({
+	sysRequest.feedbackAdd({
 		content: content.value,
 		contact: contact.value,
 	}).then(() => {

@@ -3,22 +3,11 @@
     <view class="playing-ico">
       <LoadingRound v-if="transformFileLoading"></LoadingRound>
       <template v-else>
-        <image
-          v-if="speechLoading"
-          class="icon message-playing-icon play-ico"
-          style="width: 36rpx;height:36rpx;"
-          :class="{ reverse: direction && direction == 'right' }"
-          src="/static/voice_playing.gif"
-          mode="heightFix"
-        ></image>
-        <image
-          v-else
-          class="icon message-playing-icon playing-ico"
-          style="width: 36rpx;height:36rpx;"
-          :class="{ reverse: direction && direction == 'right' }"
-          src="/static/voice_play.png"
-          mode="heightFix"
-        ></image>
+        <image v-if="speechLoading" class="icon message-playing-icon play-ico" style="width: 36rpx;height:36rpx;"
+          :class="{ reverse: direction && direction == 'right' }" src="/static/voice_playing.gif" mode="heightFix">
+        </image>
+        <image v-else class="icon message-playing-icon playing-ico" style="width: 36rpx;height:36rpx;"
+          :class="{ reverse: direction && direction == 'right' }" src="/static/voice_play.png" mode="heightFix"></image>
       </template>
     </view>
   </view>
@@ -28,10 +17,9 @@
  * @description: 语音播放组件
  */
 import { ref, onMounted, inject } from "vue";
-// import audioPlayer from "./audioPlayerExecuter";
-import chatRequest from "@/api/chat";
 import LoadingRound from "@/components/LoadingRound.vue";
 import { nextTick } from "vue";
+import utils from "@/utils/utils";
 
 import audioPlayer from "./audioPlayerExecuter"; // 导入共享对象
 import __config from "@/config/env";
@@ -40,10 +28,11 @@ const props = defineProps<{
   messageId?: string | null;
   fileName?: string | null;
   content?: string | null;
-  sessionId?: string | null;
   direction?: "right" | "left";
-  speech_role_name?: string | null;
   autoPlay?: Boolean;
+  speechRoleName?: string | null;
+  speechRoleStyle?: string | null;
+  sessionId?: string | null;
 }>();
 
 const transformFileLoading = ref(false);
@@ -57,90 +46,49 @@ onMounted(() => {
 });
 
 const handleSpeech = async () => {
-  // 语音文件直接播放
-  if (props.fileName) {
-    audioPlayer.playAudio({
-      audioUrl: `${__config.basePath}/files/${props.fileName}`,
-      listener: {
-        playing: () => {
-          speechLoading.value = true;
-        },
-        success: () => {
-          speechLoading.value = false;
-        },
-        error: () => {
-          speechLoading.value = false;
-        },
-      },
-    });
-    return;
-  }
-
-  // 聊天消息直接转换成语音
-  if (props.messageId) {
-    transformFileLoading.value = true;
-    audioPlayer.playAudio({
-      audioUrl: `${__config.basePath}/speech?message_id=${props.messageId}&x_token_query=${uni.getStorageSync("x-token") ? uni.getStorageSync("x-token") : ""}`,
-      listener: {
-        playing: () => {
-          transformFileLoading.value = false;
-          speechLoading.value = true;
-        },
-        success: () => {
-          transformFileLoading.value = false;
-          speechLoading.value = false;
-        },
-        error: () => {
-          transformFileLoading.value = false;
-          speechLoading.value = false;
-        },
-      },
-    });
-    return;
-  }
-
-  // 内容直接转换成语音
-  if (props.content) {
-    try {
+  let audioUrl = '';
+  if (props.fileName) {   // 语音文件直接播放
+    audioUrl = utils.getVoiceFileUrl(props.fileName);
+  } else {
+    if (props.messageId) {   // 聊天信息转换成语音文件再播放
       transformFileLoading.value = true;
-      // const data = await chatRequest.speechContent({
-      //   content: props.content,
-      //   speech_role_name: props.speech_role_name,
-      //   session_id: props.sessionId,
-      // });
-      // transformFileLoading.value = false;
-      // speechLoading.value = true;
-      // const audioUrl = data.data.file;
-      let audioUrl = `${__config.basePath}/speech-content?content=${props.content}`;
-      if (props.speech_role_name) {
-        audioUrl += `&speech_role_name=${props.speech_role_name}`;
+      audioUrl = `${__config.basePath}/message/speech?message_id=${props.messageId}`;
+    } else if (props.content) {  // 内容转换成语音后播放
+      transformFileLoading.value = true;
+      audioUrl = `${__config.basePath}/message/speech-content?content=${props.content}`;
+      if (props.speechRoleName) {
+        audioUrl += `&speech_role_name=${props.speechRoleName}`;
+      }
+      if (props.speechRoleStyle) {
+        audioUrl += `&speech_role_style=${props.speechRoleStyle}`;
       }
       if (props.sessionId) {
         audioUrl += `&session_id=${props.sessionId}`;
       }
-      if (uni.getStorageSync("x-token")) {
-        audioUrl += `&x_token_query=${uni.getStorageSync("x-token")}`;
-      }
-      audioPlayer.playAudio({
-        audioUrl: audioUrl,
-        listener: {
-          playing: () => {
-          transformFileLoading.value = false;
-          speechLoading.value = true;
-          },
-          success: () => {
-            speechLoading.value = false;
-          },
-          error: () => {
-            speechLoading.value = false;
-          },
-        },
-      });
-    } catch (error) {
-      speechLoading.value = false;
     }
-    return;
+    if (uni.getStorageSync("x-token")) {
+      audioUrl += `&x_token_query=${uni.getStorageSync("x-token")}`;
+    }
   }
+  console.log(audioUrl)
+  audioPlayer.playAudio({
+    audioUrl: audioUrl,
+    listener: {
+      playing: () => {
+        transformFileLoading.value = false;
+        speechLoading.value = true;
+      },
+      success: () => {
+        transformFileLoading.value = false;
+        speechLoading.value = false;
+      },
+      error: () => {
+        transformFileLoading.value = false;
+        speechLoading.value = false;
+      },
+    },
+  });
+  return;
 };
 
 /**
@@ -161,9 +109,11 @@ defineExpose({
 .speech-container {
   display: flex;
   align-items: center;
+
   .playing-ico {
     display: flex;
     align-items: center;
+
     .icon {
       width: 32rpx;
       height: 32rpx;

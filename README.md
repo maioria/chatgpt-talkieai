@@ -13,24 +13,26 @@ AI可以基于CHAT-GPT, 国内可以配置chat-gpt代理或者使用[智谱开�
 - 前端使用uniapp开发，基于vue3，可发布到网页与小程序与APP
 
 ## 项目示例图
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694157163931.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694157303262.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694157403018.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694157941483.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694158152152.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694158389243.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694158406909.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_1.0/1694158468766.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/login.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/switch-roles.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/index.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/topic-detail.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/chat.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/chat-settings.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/chat-prompt.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/pronunciation.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/select-language.jpg)
+![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/my.jpg)
 ## 本地启动
 ```bash
-# 数据库，创建一个空的数据库，.env文件配置好数据库后启动服务，服务会自动生成相应的表
+# 数据库，创建一个空的数据库，.env文件配置好数据库后启动服务，服务会自动生成相应的表，并且加载默认数据
 # 1.克隆本仓库；
 git clone git@github.com:maioria/chatgpt-talkieai.git
 cd talkieai-server
 # 2.安装依赖；
 pip3 install -r requirements.txt
 # 3. 启动服务（需要新建.env文件并设置变量，参考.env.default）
-nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+nohup uvicorn app.main:app --host 0.0.0.0 --port 8097 &
 #前端使用HBuilder直接web或者小程序运行
 
 # 1. 安装依赖(前端只用了俩个依赖fingerprintjs2 与 recorder)

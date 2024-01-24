@@ -72,12 +72,16 @@ const open = (sessionIdValue: string) => {
       session_id: sessionIdValue,
     })
     .then((data) => {
-      promoptList.value = data.data.map((item: string) => {
-        return {
-          text: item,
+      promoptList.value =[ {
+          text: data.data,
           translateShow: false,
-        };
-      });
+        }];
+      // promoptList.value = data.data.map((item: string) => {
+      //   return {
+      //     text: item,
+      //     translateShow: false,
+      //   };
+      // });
     }).finally(() => {
       promptLoading.value = false;
     })

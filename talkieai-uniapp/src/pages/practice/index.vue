@@ -11,15 +11,17 @@
         <view :class="`chat-tab ${tabNum === '2' ? 'chat-tab-actice' : ''}`" @tap="tabChange('2')">句子</view>
       </view>
       <view class="chat-tab-content">
-        <scroll-view scroll-y="true" id="chat-tab-content-one" :class="`chat-tab-content-one ${tabNum === '2' ? 'chat-tab-content-one_hidden' : ''
-          }`" @scrolltolower="onScroll">
+        <scroll-view scroll-y="true" id="chat-tab-content-one"
+          :class="`chat-tab-content-one ${tabNum === '2' ? 'chat-tab-content-one_hidden' : ''}`"
+          @scrolltolower="onScroll">
           <Single @deleteCollect="handleDeleteCollect" v-for="word in wordList" :collect="word" />
-          <loading-round v-if="loading" />
+          <loading-round v-if="wordLoading" />
         </scroll-view>
-        <scroll-view scroll-y="true" id="chat-tab-content-two" :class="`chat-tab-content-two ${tabNum === '1' ? 'chat-tab-content-two_hidden' : ''
-          }`" @scrolltolower="onScroll">
-          <Statement v-for="sentence in sentenceList" :collect="sentence" />
-          <loading-round v-if="loading" />
+        <scroll-view scroll-y="true" id="chat-tab-content-two"
+          :class="`chat-tab-content-two ${tabNum === '1' ? 'chat-tab-content-two_hidden' : ''}`"
+          @scrolltolower="onScroll">
+          <Statement v-for="sentence in sentenceList" :collect="sentence" :cannotCancel="false" />
+          <loading-round v-if="sentenceLoading" />
         </scroll-view>
       </view>
     </view>
@@ -27,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 import { onShow } from "@dcloudio/uni-app";
 
 import LoadingRound from "@/components/LoadingRound.vue";
@@ -35,13 +37,14 @@ import CommonHeader from "@/components/CommonHeader.vue";
 import type { Collect } from "@/models/models";
 import Single from "./components/Single.vue";
 import Statement from "./components/Statement.vue";
-import collectRequest from "@/api/collect";
+import accountRequest from "@/api/account";
 const wordList = ref<Collect[]>([]);
 const sentenceList = ref<Collect[]>([]);
 const tabNum = ref<string>("1");
 const wordPageSize = ref<number>(1);
 const senPageSize = ref<number>(1);
-const loading = ref<boolean>(false);
+const wordLoading = ref<boolean>(false);
+const sentenceLoading = ref<boolean>(false);
 
 onMounted(() => {
   uni.setNavigationBarTitle({
@@ -49,9 +52,10 @@ onMounted(() => {
   });
 });
 
-// TODO 需要监听类似于uniapp onShow的生命周期，不然数据不会实时更新；需要支持滚动加载
 onShow(() => {
-  initData();
+  nextTick(() => {
+    initData();
+  });
 });
 
 const handleDeleteCollect = (id: number) => {
@@ -67,31 +71,38 @@ const initData = () => {
   getSen();
 }
 
+const refreshData = () => {
+  wordPageSize.value = 1;
+  senPageSize.value = 1;
+  getWord();
+  getSen();
+}
+
 const getWord = () => {
-  if (loading.value) return;
-  loading.value = true;
+  if (wordLoading.value) return;
+  wordLoading.value = true;
   let params = {
     page: wordPageSize.value,
     page_size: 10,
     type: "WORD",
   };
-  collectRequest.collectsGet(params).then((data) => {
+  accountRequest.collectsGet(params).then((data) => {
     wordList.value = wordList.value.concat(data.data.list);
   });
-  loading.value = false;
+  wordLoading.value = false;
 };
 
 const getSen = () => {
-  if (loading.value) return;
-  loading.value = true;
+  if (sentenceLoading.value) return;
+  sentenceLoading.value = true;
   let params = {
     page: senPageSize.value,
     type: "SENTENCE",
   };
-  collectRequest.collectsGet(params).then((data) => {
+  accountRequest.collectsGet(params).then((data) => {
     sentenceList.value = sentenceList.value.concat(data.data.list);
   });
-  loading.value = false;
+  sentenceLoading.value = false;
 };
 
 const tabChange = (type: "1" | "2") => {

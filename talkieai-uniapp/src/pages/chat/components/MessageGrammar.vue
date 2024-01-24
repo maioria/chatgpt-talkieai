@@ -3,7 +3,7 @@
   <view class="grammar-box">
     <loading-round v-if="grammarAnalysisLoading" />
     <view v-if="!grammarAnalysisLoading && grammarAnalysisResult" class="grammar-content">
-      <view v-if="grammarAnalysisResult.isCorrect" class="handclap-box">
+      <view v-if="grammarAnalysisResult.is_correct" class="handclap-box">
         <view class="handclap-text">Well done！</view>
       </view>
       <template v-else>
@@ -15,16 +15,16 @@
         <view class="tips-box">
           <image class="grammar-icon-tips" src="/static/icon_correct.png"></image>
           <view class="grammar-result-content green">
-            {{ grammarAnalysisResult.correctContent }}
+            {{ grammarAnalysisResult.correct_content }}
           </view>
         </view>
       </template>
-      <view v-if="grammarAnalysisResult.errorReason" class="reason-box">
+      <view v-if="grammarAnalysisResult.error_reason" class="reason-box">
         <view class="error-tips sub-title">
           错误点
         </view>
         <view class="reason">
-          {{ grammarAnalysisResult.errorReason }}
+          {{ grammarAnalysisResult.error_reason }}
         </view>
       </view>
       <view v-if="grammarAnalysisResult.better" class="reason-box">

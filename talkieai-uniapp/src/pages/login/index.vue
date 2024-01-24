@@ -7,114 +7,28 @@
     <text class="sub-title">
       练习口语、写作的好帮手
     </text>
-    <!-- #ifdef MP-WEIXIN -->
-    <view class="mp-weixin-login-btn-box" @tap="handleWechatLogin()">
-      <text class="mp-weixin-login-btn">
-        小程序登录
-      </text>
-    </view>
-    <!-- #endif -->
     <text class="visitor-login" @tap="handleVisitorLogin()">随便逛逛</text>
   </view>
 </template>
-  
+
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import accountReqeust from '@/api/account';
 import Fingerprint2 from 'fingerprintjs2';
 
 const X_TOKEN = 'x-token';
-const app = getApp();
-
-const title = ref('欢迎回来！');
-const second = ref(60);
-const showText = ref(true);
-const phone = ref('');
-const password = ref('');
-const yzm = ref('');
-const wechatQrcodeShow = ref(false);
-const wechatQrcodeUrl = ref(null);
-const wechatIntervalId = ref(null);
 const loginLoading = ref(false);
 
 onMounted(() => {
+  uni.setNavigationBarTitle({
+		title: 'Talkie'
+	});
   // 是否有保存登录的token
   let storageToken = uni.getStorageSync(X_TOKEN);
   if (storageToken) {
   loginSucessByToken(storageToken);
   }
 });
-
-const checkPhone = () => {
-  if (!phone.value) {
-    uni.showToast({
-      title: '请输入手机号',
-      icon: 'none'
-    });
-    return false;
-  }
-  if (!/^[1][3,4,5,7,8,9][0-9]{9}$/.test(phone.value)) {
-    uni.showToast({
-      title: '请输入正确手机号',
-      icon: 'none'
-    });
-    return false;
-  }
-  if (!password.value) {
-    uni.showToast({
-      title: '请输入密码',
-      icon: 'none'
-    });
-    return false;
-  }
-  return true;
-};
-
-const handlePhoneLogin = () => {
-  if (loginLoading.value) {
-    return;
-  }
-  // 检查手机号与密码不能为空
-  if (!checkPhone()) {
-    return;
-  }
-  loginLoading.value = true;
-  accountReqeust.phoneLogin({
-    phone: phone.value,
-    password: password.value
-  })
-    .then((data: any) => {
-      loginSuccess(data);
-    })
-    .finally(() => {
-      loginLoading.value = false;
-    });
-};
-
-const handleWechatLogin = () => {
-  if (loginLoading.value) {
-    return;
-  }
-  // 在小程序中获取登录凭证 code
-  loginLoading.value = true;
-  uni.login({
-    success: (res) => {
-      const code = res.code;
-      accountReqeust.wechatLogin({
-        code: code,
-      })
-        .then(data => {
-          loginSuccess(data);
-        })
-        .finally(() => {
-          loginLoading.value = false;
-        });
-    },
-    fail: (err) => {
-      console.error(err);
-    }
-  });
-};
 
 const handleVisitorLogin = () => {
   if (loginLoading.value) {

@@ -13,7 +13,7 @@
       }
     },
     {
-      "path": "pages/home/index",
+      "path": "pages/index/switchRole",
       "style": {
         "navigationStyle": "custom"
       }
@@ -25,7 +25,7 @@
       }
     },
     {
-      "path": "pages/role/index",
+      "path": "pages/chat/settings",
       "style": {
         "navigationStyle": "custom"
       }
@@ -43,7 +43,7 @@
       }
     },
     {
-      "path": "pages/setting/index",
+      "path":"pages/my/learnLanguage",
       "style": {
         "navigationStyle": "custom"
       }
@@ -56,6 +56,36 @@
     },
     {
       "path": "pages/feedback/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/topic/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/topic/history",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/topic/phrase",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/topic/completion",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/topic/topicCreate",
       "style": {
         "navigationStyle": "custom"
       }

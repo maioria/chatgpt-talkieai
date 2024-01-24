@@ -59,6 +59,7 @@ import LoadingRound from "@/components/LoadingRound.vue";
 import speech from "./speechExecuter";
 // import audioPlayer from "@/components/audioPlayerExecuter";
 import audioPlayer from "./audioPlayerExecuter"; // 导入共享对象
+import utils from "@/utils/utils";
 
 const emit = defineEmits();
 
@@ -130,11 +131,10 @@ const handlePlaySpeech = () => {
     return;
   }
   audioPlayer.playAudio({
-    audioUrl: recorder.value.voiceFileName,
+    audioUrl: utils.getVoiceFileUrl(recorder.value.voiceFileName),
     listener: {
       playing: () => {
         voicePlaying.value = true;
-        console.log(voicePlaying.value);
       },
       success: () => {
         voicePlaying.value = false;

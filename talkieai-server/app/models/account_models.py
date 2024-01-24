@@ -23,8 +23,8 @@ class VisitorLoginDTO(BaseModel):
 class ChatDTO(BaseModel):
     """聊天"""
 
-    message: str = None
-    file_name: str = None
+    message: str | None = None
+    file_name: str | None = None
 
 
 class MessagePracticeDTO(BaseModel):
@@ -56,28 +56,10 @@ class TranslateTextDTO(BaseModel):
 
     text: constr(min_length=1)
     session_id: str = None
-    target_language: str = "zh-CN"
-
-
-class TransformContentSpeechDTO(BaseModel):
-    """内容转语音"""
-
-    session_id: str = None
-    content: constr(max_length=500)
-    speech_role_name: str = "en-US-JennyNeural"
-    speech_style: str = "neutral"
-    speech_rate: str = "1.0"
-    language: str = "en-US"
 
 
 class GrammarDTO(BaseModel):
     """分析英文的语法错误"""
-
-    message_id: constr(min_length=1)
-
-
-class PronunciationDTO(BaseModel):
-    """语音评估"""
 
     message_id: constr(min_length=1)
 
@@ -110,11 +92,6 @@ class PromptDTO(BaseModel):
     session_id: constr(min_length=1)
 
 
-class FeedbackDTO(BaseModel):
-    content: constr(min_length=1)
-    contact: str = None
-
-
 class AccountSettingsDTO(BaseModel):
     auto_playing_voice: bool = True
     playing_voice_speed: str = "1.0"
@@ -124,3 +101,24 @@ class AccountSettingsDTO(BaseModel):
 
 class CreateSessionDTO(BaseModel):
     role_name: str
+
+
+class UpdateRoleDTO(BaseModel):
+    language: str
+    role_name: str
+    style: str = None
+    avatar: str
+    local_name: str
+
+
+class UpdateLanguageDTO(BaseModel):
+    language: constr(min_length=1)
+
+
+class AccountSettingsDTO(BaseModel):
+    target_language: str | None = None
+    speech_role_name: str | None = None
+    auto_playing_voice: int = 1
+    playing_voice_speed: str = "1.0"
+    auto_text_shadow: int = 1
+    auto_pronunciation: int = 1

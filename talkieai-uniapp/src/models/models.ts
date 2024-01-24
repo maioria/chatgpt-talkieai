@@ -2,13 +2,17 @@ export interface AccountInfo {
   account_id: string;
   today_chat_count: number;
   total_chat_count: number;
+  target_language_label: string;
 }
 
 export interface AccountSettings {
-  auto_playing_voice:boolean;
-  auto_text_shadow:boolean;
-  auto_pronunciation:boolean;
+  auto_playing_voice:number;
+  auto_text_shadow:number;
+  auto_pronunciation:number;
   playing_voice_speed:string;
+  speech_role_name_label:string;
+  speech_role_name:string;
+  target_language:string;
 }
 
 export interface Collect {
@@ -59,7 +63,7 @@ export interface MessagePage {
 
 export interface Session {
   id?: string;
-  speech_role_name: string;
+  type?: string;
   messages: MessagePage;
 }
 

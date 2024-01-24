@@ -4,8 +4,7 @@ import azure.cognitiveservices.speech as speechsdk
 
 from app.config import Config
 from app.core.logging import logging
-from pydub import AudioSegment
-import os
+from app.core.language import *
 
 key = Config.AZURE_KEY
 region = "eastasia"
@@ -16,16 +15,57 @@ speech_synthesizer = speechsdk.SpeechSynthesizer(
     speech_config=speech_config, audio_config=None
 )
 
+def speech_default(content: str, output_path_str: str, language: str, voice_name: str|None = None):
+    """默认语音合成  还是用不了，因为每次还要实例化 speech_synthesizer"""
+    speech_config.speech_recognition_language = language
+    speech_config.speech_synthesis_language = language
+    # 如果voice_name是空，则设置对应语言的默认角色
+    if not voice_name:
+        voice_name = get_azure_language_default_role(language)
+    speech_config.speech_synthesis_voice_name = voice_name
+    speech_synthesis_result = speech_synthesizer.speak_text_async(content).get()
+    audio_data_stream = speechsdk.AudioDataStream(speech_synthesis_result)
+
+    if (
+        speech_synthesis_result.reason
+        == speechsdk.ResultReason.SynthesizingAudioCompleted
+    ):
+        audio_data_stream.save_to_wav_file(output_path_str)
+    elif (
+        speech_synthesis_result.reason
+        == speechsdk.ResultReason.Canceled
+    ):
+        cancellation_details = speech_synthesis_result.cancellation_details
+        logging.error(
+            "Speech synthesis canceled: {}".format(cancellation_details.reason)
+        )
+        if cancellation_details.reason == speechsdk.CancellationReason.Error:
+            if cancellation_details.error_details:
+                logging.error(
+                    "Error details: {}".format(cancellation_details.error_details)
+                )
+                logging.error(
+                    "Did you set the speech resource key and region values?"
+                )
+        raise Exception("语音合成失败")
+    else:
+        logging.error(
+            "Speech synthesis failed: {}".format(speech_synthesis_result.reason)
+        )
+        raise Exception("语音合成失败")
 
 def speech_by_ssml(
     content: str,
     output_path_str: str,
-    voice_name: str = "en-US-JennyNeural",
-    speech_rate: str = "1.0",
-    feel: str = "neutral",
-    targetLang: str = "en-US",
+    voice_name: str,
+    speech_rate: str,
+    feel: str,
+    targetLang: str,
 ):
     """可定制的文本转语音"""
+    # 如果voice_name是空，则设置对应语言的默认角色
+    if not voice_name:
+        voice_name = get_azure_language_default_role(targetLang)
     ssml = f"""
     <speak version="1.0"  xmlns:mstts="https://www.w3.org/2001/mstts" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="{targetLang}">
       <voice name="{voice_name}">
@@ -232,3 +272,50 @@ def get_voice_list():
             }
         )
     return voice_vo_list
+
+
+# 获取支持的语音列表，组装成对象数组进行返回
+def get_voice_list():
+    """通过synthesizer.getVoicesAsync()方法来获取所有支持的语音列表"""
+    speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config)
+    voice_list = speech_synthesizer.get_voices_async().get()
+    # 迭代list，组装成对象数组进行返回
+    voice_vo_list = []
+    for voice in voice_list.voices:
+        voice_vo_list.append(
+            {
+                "gender": voice.gender.value,
+                "locale": voice.locale,
+                "local_name": voice.local_name,
+                "name": voice.name,
+                "short_name": voice.short_name,
+                "voice_type": {
+                    "name": voice.voice_type.name,
+                    "value": voice.voice_type.value,
+                },
+                "style_list": voice.style_list,
+            }
+        )
+    return voice_vo_list
+
+voice_vo_list = get_voice_list()
+# 获取azure语音配置，并且按 locale 分组
+azure_voice_configs = voice_vo_list
+
+azure_voice_configs_group = {}
+for azure_voice_config in azure_voice_configs:
+    if azure_voice_config["locale"] not in azure_voice_configs_group:
+        azure_voice_configs_group[azure_voice_config["locale"]] = []
+    azure_voice_configs_group[azure_voice_config["locale"]].append(azure_voice_config)
+
+def get_azure_voice_role_by_short_name(short_name: str):
+    """根据short_name获取语音配置"""
+    local = short_name.rsplit('-', 1)[0]
+    azure_voice_configs = azure_voice_configs_group[local]
+    # 迭代azure_voice_configs，找到item中short_name与settings.speech_role_name相同的item，取local_name
+    result = None
+    for item in azure_voice_configs:
+        if item["short_name"] == short_name:
+            return item
+    # 抛出异常
+    raise Exception("未找到对应的语音配置")    

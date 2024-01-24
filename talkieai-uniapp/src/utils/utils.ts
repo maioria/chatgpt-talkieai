@@ -1,3 +1,5 @@
+import __config from "@/config/env";
+
 export default {
   isWechat: () => {
     const ua = navigator.userAgent.toLowerCase();
@@ -5,5 +7,8 @@ export default {
   },
   removeDecimal: (num: number) => {
     return Math.floor(num);
+  },
+  getVoiceFileUrl: (fileName: string) => {
+    return `${__config.basePath}/voices/${fileName}`;
   },
 };

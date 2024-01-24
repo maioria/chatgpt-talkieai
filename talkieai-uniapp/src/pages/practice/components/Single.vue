@@ -10,7 +10,7 @@
         </view>
       </view>
       <view class="chat-list-action-box">
-        <AudioPlayer class="chat-list-action_playing btn-box" :message_id="collect.message_id"
+        <AudioPlayer class="chat-list-action_playing btn-box" :messageId="collect.message_id"
           :content="collect.content" />
         <image @tap="handleDelete" class="chat-list-action btn-box" src="/static/deleted.png" mode="heightFix" />
       </view>
@@ -23,7 +23,7 @@ import { ref, onMounted, defineEmits } from "vue";
 import { defineProps } from "vue";
 import AudioPlayer from "@/components/AudioPlayer.vue";
 import type { Collect } from "@/models/models";
-import collectRequest from "@/api/collect";
+import accountRequest from "@/api/account";
 
 const emit = defineEmits();
 // 定义Collect类型为prop
@@ -39,7 +39,7 @@ const handleDelete = () => {
     success: (res) => {
       if (res.confirm) {
         // 用户点击确定
-        collectRequest
+        accountRequest
           .cancelCollect({
             type: props.collect.type,
             message_id: props.collect.message_id,

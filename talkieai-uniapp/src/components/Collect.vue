@@ -11,7 +11,7 @@
   
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import collectRequest from '@/api/collect';
+import accountRequest from '@/api/account';
 import LoadingRound from "@/components/LoadingRound.vue";
 const app = getApp();
 
@@ -37,7 +37,7 @@ onMounted(() => {
         return;
     }
 
-    collectRequest.collectGet(requestParams).then((data) => {
+    accountRequest.collectGet(requestParams).then((data) => {
         collected.value = data.data.is_collect;
     });
 });
@@ -48,7 +48,7 @@ const handleCollect = () => {
     }
 
     collectLoading.value = true;
-    collectRequest.collect(requestParams).then(() => {
+    accountRequest.collect(requestParams).then(() => {
         collected.value = true;
         collectLoading.value = false;
     });
@@ -60,7 +60,7 @@ const handleCancel = () => {
     }
 
     collectLoading.value = true;
-    collectRequest.cancelCollect(requestParams).then(() => {
+    accountRequest.cancelCollect(requestParams).then(() => {
         collected.value = false;
         collectLoading.value = false;
     });

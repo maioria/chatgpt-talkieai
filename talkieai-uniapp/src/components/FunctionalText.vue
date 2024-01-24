@@ -36,6 +36,7 @@
         :autoPlay="autoPlay"
         :sessionId="sessionId"
         :messageId="messageId"
+        :fileName="fileName"
         :content="text"
       />
     </view>
@@ -67,6 +68,7 @@ const props = defineProps<{
   textShadow?: Boolean;
   sessionId?: string | null;
   messageId?: string | null;
+  fileName?: string | null;
   wordClickable?: Boolean;
   translateShow?: Boolean;
   autoPlay?: Boolean;
@@ -110,7 +112,7 @@ const initTranslateData = () => {
       });
   } else {
     chatRequest
-      .translateText({
+      .translateSourceLanguage({
         text: props.text,
       })
       .then((data) => {

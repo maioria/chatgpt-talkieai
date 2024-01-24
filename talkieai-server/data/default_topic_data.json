@@ -1,0 +1,102 @@
+{
+  "groups": [
+    {
+      "id": "group_1",
+      "name": "自我介绍",
+      "type": "ROLE_PLAY",
+      "description": "做一个基本的自我介绍吧",
+      "sequence": 10,
+      "topics": [
+        {
+          "id": "topic_1",
+          "language": "en-US",
+          "name": "自我介绍",
+          "level": 2,
+          "role_short_name": "en-US-JaneNeural",
+          "role_speech_rate": "1.0",
+          "topic_user_name": "Jack",
+          "topic_bot_name": "Jane",
+          "prompt": "你是用户的一位很好的朋友，现在开始引导用户来做一次简单的自我介绍吧，一步步的引导用户来介绍姓名、地址、爱好、身边朋友",
+          "description": "做一个基本的自我介绍吧",
+          "image_url": "https://qiniu.prejade.com/1597936949107363840/aitake/images/be8d50e5-17ba-4941-8960-af3ee9be6711.png",
+          "sequence": 1,
+          "phrases":[
+            {"phrase":"Hello, my name is Jack", "phrase_translation":"你好，我的名子叫Jack", "type":"PHRASE", "sequence": 1}
+          ],
+          "targets": [
+            {
+              "type": "MAIN",
+              "description": "自我介绍并进行轻松随意的交谈",
+              "description_translation": "",
+              "sequence": 100
+            },
+            {
+              "type": "TRIAL",
+              "description": "问新朋友俩个关于他/她自己的问题",
+              "description_translation": "",
+              "sequence": 3
+            },
+            {
+              "type": "TRIAL",
+              "description": "展开聊聊你的家乡和工作",
+              "description_translation": "",
+              "sequence": 2
+            },
+            {
+              "type": "TRIAL",
+              "description": "展开聊聊你的家乡和工作",
+              "description_translation": "",
+              "sequence": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "group_2",
+      "name": "外贸业务",
+      "type": "ROLE_PLAY",
+      "description": "外贸业务的交流",
+      "sequence": 1,
+      "topics": [
+        {
+          "id": "group_2_topic_1",
+          "language": "en-US",
+          "name": "外贸介绍",
+          "level": 4,
+          "role_short_name": "en-US-JaneNeural",
+          "role_speech_rate": "1.0",
+          "topic_user_name": "Jack",
+          "topic_bot_name": "Jane",
+          "prompt": "你是用户的一位外贸客户，现在开始引导用户来做一次简单的外贸介绍吧，一步步的引导用户来介绍产品、效果、使用方式",
+          "description": "做一个基本的自我介绍吧",
+          "image_url": "https://qiniu.prejade.com/1597936949107363840/aitake/images/be8d50e5-17ba-4941-8960-af3ee9be6711.png",
+          "sequence": 1,
+          "phrases":[
+            {"phrase":"Hello, my name is Jack", "phrase_translation":"你好，我的名子叫Jack", "type":"PHRASE", "sequence": 1}
+          ],
+          "targets": [
+            {
+              "type": "MAIN",
+              "description": "自我介绍并进行轻松随意的交谈",
+              "description_translation": "",
+              "sequence": 100
+            },
+            {
+              "type": "TRIAL",
+              "description": "讲清楚自己的产品",
+              "description_translation": "",
+              "sequence": 3
+            },
+            {
+              "type": "TRIAL",
+              "description": "讲清楚产品的使用方式",
+              "description_translation": "",
+              "sequence": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

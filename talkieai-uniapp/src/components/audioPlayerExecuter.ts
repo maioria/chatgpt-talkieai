@@ -23,15 +23,10 @@ class AudioPlayer {
   playAudio({ audioUrl, listener }: { audioUrl: string; listener: Listener }) {
     let audioSrc = audioUrl;
     if (this.audioContext) {
-      console.log(this.audioContext.src);
     }
     if (this.audioContext) {
-      console.log("destory.." + this.audioContext.src);
       const oldSrc = this.audioContext.src;
       this.audioContext.stop();
-      // this.audioContext.destory && this.audioContext.destory();
-      // this.audioContext.stop();
-      // this.audioContext.pause();
       if (oldSrc === audioSrc) {
         this.audioContext = null;
         return;
@@ -58,35 +53,25 @@ class AudioPlayer {
     innerAudioContext.src = src;
 
     innerAudioContext.onPlay(() => {
-      console.log("onPlay");
       if (listener.playing) {
         listener.playing();
       }
     });
     innerAudioContext.onStop(() => {
-      console.log("onStop");
       if (listener.success) {
         listener.success();
       }
       innerAudioContext.destory && innerAudioContext.destory();
       this.audioContext = null;
-      // this.audioContext=null;
     });
     innerAudioContext.onEnded(() => {
-      console.log("onEnded");
       if (listener.success) {
         listener.success();
       }
-      console.log("end audio context1");
       innerAudioContext.destory && innerAudioContext.destory();
       this.audioContext = null;
-      console.log("end audio context2");
-      console.log(this.audioContext);
-      // console.log("destory");
     });
     innerAudioContext.onError((res: any) => {
-      console.log("onError");
-      console.log(res);
       if (listener.error) {
         listener.error();
       }
