@@ -2,14 +2,13 @@
 
 ## 简介
 [TalkieAI](https://github.com/maioria/chatgpt-talkieai) 是一个基于AI的外语学习应用，可通过语音进行聊天，语法分析，翻译。
-AI可以基于CHAT-GPT, [智谱开放平台](https://open.bigmodel.cn/)
+AI可以基于CHAT-GPT, 国内可以配置chat-gpt代理或者使用[智谱开放平台](https://open.bigmodel.cn/)
 ## 在线预览
 
 - [TalkieAI 预览地址](https://talkie.prejade.com/)
 
-
 ## 后端
-- 使用python语言开发，开发使用的版本为3.9，web框架为fastAPI，数据层框架为SQLAlchemy，语音使用azure。
+- 使用python语言开发，开发使用的版本为3.11，web框架为fastAPI，数据层框架为SQLAlchemy，语音使用azure。
 ## 前端
 - 前端使用uniapp开发，基于vue3，可发布到网页与小程序与APP
 
