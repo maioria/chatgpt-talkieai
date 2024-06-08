@@ -7,6 +7,9 @@ AI可以基于CHAT-GPT, 国内可以配置chat-gpt代理或者使用[智谱开�
 
 - [TalkieAI 预览地址](https://talkie.prejade.com/)
 
+## 微信小程序
+![](https://aitake-saas-qiniu.sciotech.cn/aitake-ai/gh_8f98368aa102_258.jpg)  
+
 ## 后端
 - 使用python语言开发，开发使用的版本为3.11，web框架为fastAPI，数据层框架为SQLAlchemy，语音使用azure。
 ## 前端
