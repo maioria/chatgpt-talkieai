@@ -13,16 +13,10 @@ AI可以基于CHAT-GPT, 国内可以配置chat-gpt代理或者使用[智谱开�
 - 前端使用uniapp开发，基于vue3，可发布到网页与小程序与APP
 
 ## 项目示例图
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/login.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/switch-roles.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/index.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/topic-detail.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/chat.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/chat-settings.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/chat-prompt.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/pronunciation.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/select-language.jpg)
-![](https://qiniu.prejade.com/1597936949107363840/talkie/example_2.0/my.jpg)
+![](https://aitake.oss-cn-wulanchabu.aliyuncs.com/c79b6648bea061d2813773075ba3349807dcaea90c9699c5cef9cfa6b894e9ad.png)
+![](https://aitake.oss-cn-wulanchabu.aliyuncs.com/e7a3ad173b55dad7682d843ce1e7a424ef321bf03ac100c81ff07519b05352d0.png)
+![](https://aitake.oss-cn-wulanchabu.aliyuncs.com/6a7d7ff41c5f366b43084a41e7268dcdbc32b65fd0dd976b5ec368ac28dca3cf.png)
+![](https://aitake.oss-cn-wulanchabu.aliyuncs.com/70d6feeb534e9aa9748d51c8c10acc06bb00224f8a40d96a002dc434977d1524.png)
 ## 本地启动
 ```bash
 # 数据库，创建一个空的数据库，.env文件配置好数据库后启动服务，服务会自动生成相应的表，并且加载默认数据
