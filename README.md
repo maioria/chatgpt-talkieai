@@ -1,4 +1,4 @@
-# <img src="https://qiniu.prejade.com/1597936949107363840/talkie/icon.png" width="60px" align="center" alt="ChatGPT-TalkieAI icon"> TalkieAI
+# TalkieAI
 
 ## 简介
 [TalkieAI](https://github.com/maioria/chatgpt-talkieai) 是一个基于AI的外语学习应用，可通过语音进行聊天，语法分析，翻译。
@@ -76,13 +76,6 @@ server {
         }
     }
 ```
-## 交流
-  <div style="display:flex;">
-  	<div style="padding-right:24px;">
-  		<p>QQ交流群</p>
-      <img src="https://qiniu.prejade.com/1597936949107363840/talkie/WechatIMG158.jpg" style="width:200px" />
-  	</div>
-  </div>
 
 ## 贡献
 如果您有任何建议或意见，欢迎提出 [Issues](https://github.com/maioria/chatgpt-talkieai/issues) 或 [ Pull Request](https://github.com/maioria/chatgpt-talkieai/pulls)。
